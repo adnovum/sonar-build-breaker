@@ -19,35 +19,34 @@
  */
 package org.sonar.plugins.buildbreaker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.BuildBreaker;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.MeasuresFilters;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Project;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import java.util.Collection;
 
 public class AlertThresholdChecker extends BuildBreaker {
 
   public void executeOn(Project project, SensorContext context) {
-    Logger logger = LoggerFactory.getLogger(getClass());
-    analyseMeasures(context, logger);
+    analyseMeasures(context, LoggerFactory.getLogger(getClass()));
   }
 
   protected void analyseMeasures(SensorContext context, Logger logger) {
     int count = countErrors(context, logger);
-    if(count>0) {
+    if (count > 0) {
       fail("Alert thresholds are hit (" + count + ").");
     }
   }
 
   private int countErrors(SensorContext context, Logger logger) {
     Collection<Measure> measures = context.getMeasures(MeasuresFilters.all());
-    int count=0;
+    int count = 0;
     for (Measure measure : measures) {
       if (isErrorAlert(measure)) {
         logger.error(measure.getAlertText());

@@ -11,20 +11,27 @@
   <artifactId>sonar-build-breaker-plugin</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>Sonar Build Breaker Plugin</name>
-  <url></url>
+  <url>http://docs.codehaus.org/display/SONAR/Build+Breaker</url>
   <inceptionYear>2009</inceptionYear>
 
   <developers>
     <developer>
+      <id>simon.brandhof</id>
       <name>Simon Brandhof</name>
       <timezone>+1</timezone>
     </developer>
   </developers>
-  
+
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/build-breaker</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/build-breaker</developerConnection>
+    <url>http://svn.sonar-plugins.codehaus.org</url>
+  </scm>
+
   <properties>
     <sonar.version>1.10RC4</sonar.version>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
@@ -51,11 +58,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <scm>
-    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/build-breaker</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/build-breaker</developerConnection>
-    <url>http://svn.sonar-plugins.codehaus.org</url>
-  </scm>
+
   <build>
     <plugins>
       <plugin>
