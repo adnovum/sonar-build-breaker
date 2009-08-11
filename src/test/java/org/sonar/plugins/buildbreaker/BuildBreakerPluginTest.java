@@ -19,14 +19,23 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import org.junit.Test;
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
+import org.junit.Test;
 
 public class BuildBreakerPluginTest {
 
   @Test
   public void oneExtensionIsRegistered() {
     assertThat(new BuildBreakerPlugin().getExtensions().size(), is(1));
+  }
+
+  @Test
+  public void justToIncreaseCoverage() {
+    assertThat(new BuildBreakerPlugin().getName(), not(nullValue()));
+    assertThat(new BuildBreakerPlugin().getKey(), is("build-breaker"));
+    assertThat(new BuildBreakerPlugin().getDescription(), not(nullValue()));
   }
 }
