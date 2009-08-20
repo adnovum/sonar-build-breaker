@@ -40,7 +40,7 @@ public class AlertThresholdChecker extends BuildBreaker {
   protected void analyseMeasures(SensorContext context, Logger logger) {
     int count = countErrors(context, logger);
     if (count > 0) {
-      fail("Alert thresholds are hit (" + count + ").");
+      fail("Alert thresholds have been hit (" + count + " times).");
     }
   }
 
