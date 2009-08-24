@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>parent</artifactId>
@@ -9,7 +8,7 @@
   </parent>
   <groupId>org.codehaus.sonar-plugins</groupId>
   <artifactId>sonar-build-breaker-plugin</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>Sonar Build Breaker Plugin</name>
   <url>http://docs.codehaus.org/display/SONAR/Build+Breaker</url>
   <inceptionYear>2009</inceptionYear>
@@ -23,9 +22,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/build-breaker</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/build-breaker</developerConnection>
-    <url>http://svn.sonar-plugins.codehaus.org</url>
+    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/tags/sonar-build-breaker-plugin-0.1</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/tags/sonar-build-breaker-plugin-0.1</developerConnection>
+    <url>scm:svn:https://svn.codehaus.org/sonar-plugins/tags/sonar-build-breaker-plugin-0.1</url>
   </scm>
 
   <properties>
