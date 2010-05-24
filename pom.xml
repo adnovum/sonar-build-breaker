@@ -39,16 +39,23 @@
     </license>
   </licenses>
 
+  <properties>
+    <sonar.version>1.10</sonar.version>
+    <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>1.10</version>
+      <version>${sonar.version}</version>
+      <scope>provided</scope>
     </dependency>
+    <!-- unit tests -->
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>1.10</version>
+      <version>${sonar.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
@@ -74,7 +81,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Plugin-Class>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</Plugin-Class>
+              <Plugin-Class>${sonar.pluginClass}</Plugin-Class>
             </manifestEntries>
           </archive>
         </configuration>
