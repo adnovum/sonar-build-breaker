@@ -3,12 +3,14 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.codehaus.sonar-plugins</groupId>
-    <version>5</version>
+    <version>6</version>
     <relativePath>../parent</relativePath>
   </parent>
-  <groupId>org.codehaus.sonar-plugins</groupId>
+
   <artifactId>sonar-build-breaker-plugin</artifactId>
   <version>0.2-SNAPSHOT</version>
+  <packaging>sonar-plugin</packaging>
+
   <name>Sonar Build Breaker Plugin</name>
   <url>http://docs.codehaus.org/display/SONAR/Build+Breaker</url>
   <inceptionYear>2009</inceptionYear>
@@ -41,6 +43,9 @@
 
   <properties>
     <sonar.version>1.10</sonar.version>
+    <!-- TODO sonar-packaging-maven-plugin because of SONAR-1879 -->
+    <sonar.pluginKey>buildbreaker</sonar.pluginKey>
+    <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
   </properties>
 
@@ -72,20 +77,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <Plugin-Class>${sonar.pluginClass}</Plugin-Class>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
