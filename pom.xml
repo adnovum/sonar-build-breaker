@@ -3,7 +3,7 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.codehaus.sonar-plugins</groupId>
-    <version>6</version>
+    <version>7</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -12,8 +12,20 @@
   <packaging>sonar-plugin</packaging>
 
   <name>Sonar Build Breaker Plugin</name>
+  <description>Break the analysis batch if at least one alert threshold is hit.</description>
   <url>http://docs.codehaus.org/display/SONAR/Build+Breaker</url>
   <inceptionYear>2009</inceptionYear>
+  <organization>
+    <name>SonarSource</name>
+    <url>http://www.sonarsource.com</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU LGPL 3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <developers>
     <developer>
@@ -33,18 +45,8 @@
     <url>http://jira.codehaus.org/browse/SONARPLUGINS/component/14033</url>
   </issueManagement>
 
-  <licenses>
-    <license>
-      <name>GNU LGPL 3</name>
-      <url>http://www.gnu.org/licenses/lgpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
   <properties>
-    <sonar.version>1.10</sonar.version>
-    <!-- TODO sonar-packaging-maven-plugin because of SONAR-1879 -->
-    <sonar.pluginKey>buildbreaker</sonar.pluginKey>
+    <sonar.version>1.12</sonar.version>
     <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
   </properties>

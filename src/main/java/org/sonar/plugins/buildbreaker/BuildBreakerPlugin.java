@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class BuildBreakerPlugin implements Plugin {
   public String getKey() {
-    return "build-breaker";
+    return "buildbreaker";
   }
 
   public String getName() {

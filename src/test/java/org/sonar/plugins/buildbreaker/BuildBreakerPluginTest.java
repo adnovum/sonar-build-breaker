@@ -36,7 +36,7 @@ public class BuildBreakerPluginTest {
   @Test
   public void justToIncreaseCoverage() {
     assertThat(new BuildBreakerPlugin().getName(), not(nullValue()));
-    assertThat(new BuildBreakerPlugin().getKey(), is("build-breaker"));
+    assertThat(new BuildBreakerPlugin().getKey(), is("buildbreaker"));
     assertThat(new BuildBreakerPlugin().getDescription(), not(nullValue()));
   }
 }
