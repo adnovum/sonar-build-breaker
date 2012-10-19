@@ -20,11 +20,10 @@
 
 package org.sonar.plugins.buildbreaker;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class BuildBreakerPluginTest {
 
@@ -33,10 +32,4 @@ public class BuildBreakerPluginTest {
     assertThat(new BuildBreakerPlugin().getExtensions().size(), is(1));
   }
 
-  @Test
-  public void justToIncreaseCoverage() {
-    assertThat(new BuildBreakerPlugin().getName(), not(nullValue()));
-    assertThat(new BuildBreakerPlugin().getKey(), is("buildbreaker"));
-    assertThat(new BuildBreakerPlugin().getDescription(), not(nullValue()));
-  }
 }

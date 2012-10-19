@@ -20,24 +20,13 @@
 
 package org.sonar.plugins.buildbreaker;
 
-import org.sonar.api.Plugin;
 import org.sonar.api.Extension;
+import org.sonar.api.SonarPlugin;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-public class BuildBreakerPlugin implements Plugin {
-  public String getKey() {
-    return "buildbreaker";
-  }
-
-  public String getName() {
-    return "Build Breaker";
-  }
-
-  public String getDescription() {
-    return "Break the analysis batch if at least one alert threshold is hit.";
-  }
+public class BuildBreakerPlugin extends SonarPlugin {
 
   public List<Class<? extends Extension>> getExtensions() {
     List<Class<? extends Extension>> list = new ArrayList<Class<? extends Extension>>();

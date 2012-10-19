@@ -3,7 +3,7 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.codehaus.sonar-plugins</groupId>
-    <version>13</version>
+    <version>14</version>
     <relativePath>../parent</relativePath>
   </parent>
 
@@ -46,7 +46,7 @@
   </issueManagement>
 
   <properties>
-    <sonar.version>1.12</sonar.version>
+    <sonar.version>3.0</sonar.version>
     <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
   </properties>
