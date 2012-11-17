@@ -3,7 +3,7 @@
   <parent>
     <artifactId>parent</artifactId>
     <groupId>org.codehaus.sonar-plugins</groupId>
-    <version>14</version>
+    <version>15</version>
     <relativePath>../parent</relativePath>
   </parent>
 
