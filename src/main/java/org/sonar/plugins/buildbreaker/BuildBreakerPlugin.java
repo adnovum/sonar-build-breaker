@@ -20,13 +20,24 @@
 
 package org.sonar.plugins.buildbreaker;
 
+import org.sonar.api.Properties;
+import org.sonar.api.Property;
+import org.sonar.api.PropertyType;
+
 import org.sonar.api.Extension;
 import org.sonar.api.SonarPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Properties({
+  @Property(key = BuildBreakerPlugin.SKIP_KEY, defaultValue = "false", name = "Build Breaker skip flag",
+    description = "If set to true the plugin is disabled", global = true, project = true,
+    type = PropertyType.BOOLEAN)
+})
 public class BuildBreakerPlugin extends SonarPlugin {
+
+  public static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
   public List<Class<? extends Extension>> getExtensions() {
     List<Class<? extends Extension>> list = new ArrayList<Class<? extends Extension>>();

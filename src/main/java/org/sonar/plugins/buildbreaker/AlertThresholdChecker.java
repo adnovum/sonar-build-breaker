@@ -20,6 +20,9 @@
 
 package org.sonar.plugins.buildbreaker;
 
+import org.sonar.api.config.Settings;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.BuildBreaker;
@@ -34,8 +37,20 @@ import java.util.Collection;
 
 public class AlertThresholdChecker extends BuildBreaker {
 
+  private static final Logger LOG = LoggerFactory.getLogger(AlertThresholdChecker.class);
+
+  private Settings settings;
+
+  public AlertThresholdChecker(Settings settings) {
+    this.settings = settings;
+  }
+
   public void executeOn(Project project, SensorContext context) {
-    analyseMeasures(context, LoggerFactory.getLogger(getClass()));
+    if (settings.getBoolean(BuildBreakerPlugin.SKIP_KEY)) {
+      LOG.debug("BuildBreaker disabled on project " + project);
+    } else {
+      analyseMeasures(context, LoggerFactory.getLogger(getClass()));
+    }
   }
 
   protected void analyseMeasures(SensorContext context, Logger logger) {
