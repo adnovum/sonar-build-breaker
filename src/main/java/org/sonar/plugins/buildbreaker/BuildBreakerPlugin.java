@@ -28,6 +28,7 @@ import org.sonar.api.Extension;
 import org.sonar.api.SonarPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Properties({
@@ -39,9 +40,7 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
-  public List<Class<? extends Extension>> getExtensions() {
-    List<Class<? extends Extension>> list = new ArrayList<Class<? extends Extension>>();
-    list.add(AlertThresholdChecker.class);
-    return list;
+  public List<?> getExtensions() {
+    return Arrays.asList(AlertThresholdChecker.class);
   }
 }
