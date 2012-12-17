@@ -28,19 +28,28 @@ import org.sonar.api.Extension;
 import org.sonar.api.SonarPlugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Properties({
-  @Property(key = BuildBreakerPlugin.SKIP_KEY, defaultValue = "false", name = "Build Breaker skip flag",
-    description = "If set to true the plugin is disabled", global = true, project = true,
-    type = PropertyType.BOOLEAN)
+  @Property(key = BuildBreakerPlugin.SKIP_KEY, defaultValue = "false", name = "Build Breaker skip on alert flag",
+    description = "If set to true breaks on alerts are disabled. By default breaks on alerts are enabled.", global = true, project = true,
+    type = PropertyType.BOOLEAN),
+  @Property(key = BuildBreakerPlugin.FORBIDDEN_CONF_KEY,
+    name = "Forbidden configuration parameters",
+    description = "Comma-seperated list of 'key=value' pairs that should break the build",
+    global = true,
+    project = false)
 })
 public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
-  public List<?> getExtensions() {
-    return Arrays.asList(AlertThresholdChecker.class);
+  public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbidden.conf";
+
+  public List<Class<? extends Extension>> getExtensions() {
+    List<Class<? extends Extension>> list = new ArrayList<Class<? extends Extension>>();
+    list.add(AlertThresholdChecker.class);
+    list.add(ForbiddenConfigurationChecker.class);
+    return list;
   }
 }

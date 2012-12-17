@@ -29,7 +29,7 @@ public class BuildBreakerPluginTest {
 
   @Test
   public void oneExtensionIsRegistered() {
-    assertThat(new BuildBreakerPlugin().getExtensions().size(), is(1));
+    assertThat(new BuildBreakerPlugin().getExtensions().size(), is(2));
   }
 
 }
