@@ -39,7 +39,7 @@ public class AlertThresholdChecker extends BuildBreaker {
 
   private static final Logger LOG = LoggerFactory.getLogger(AlertThresholdChecker.class);
 
-  private Settings settings;
+  private final Settings settings;
 
   public AlertThresholdChecker(Settings settings) {
     this.settings = settings;

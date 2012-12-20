@@ -19,43 +19,55 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import org.junit.Before;
-
-import org.apache.commons.configuration.Configuration;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.sonar.api.config.Settings;
 import org.sonar.api.utils.SonarException;
-
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ForbiddenConfigurationCheckerTest {
 
-  private Configuration conf;
-  private ForbiddenConfigurationChecker checker;
-
-  @Before
-  public void setUp() {
-    conf = mock(Configuration.class);
-    when(conf.getString("foo")).thenReturn("bar");
-    checker = new ForbiddenConfigurationChecker(conf);
-  }
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void shouldNotFailWithoutAnyForbiddenConfSet() {
+    ForbiddenConfigurationChecker checker = new ForbiddenConfigurationChecker(new Settings());
     checker.executeOn(null, null);
     // no exception expected
   }
 
   @Test
-  public void shouldFail() {
-    when(conf.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY)).thenReturn(new String[]{ "foo=bar" });
-    try {
-      checker.executeOn(null, null);
-      fail("Sonar exception expected, not supposed to use foo=bar");
-    } catch (SonarException sEx) {
-      // exception expected
-    }
+  public void should_fail_if_forbidden_property_is_set() {
+    thrown.expect(SonarException.class);
+    thrown.expectMessage("[BUILD BREAKER] Forbidden configuration detected: foo=bar");
+
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+    settings.setProperty("foo", "bar");
+
+    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
   }
 
+  @Test
+  public void should_not_fail_if_forbidden_property_value_is_different() {
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+    settings.setProperty("foo", "other_value");
+
+    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
+    // no exception expected
+  }
+
+  @Test
+  public void should_fail_if_forbidden_boolean_property_is_set() {
+    thrown.expect(SonarException.class);
+    thrown.expectMessage("[BUILD BREAKER] Forbidden configuration detected: foo=true");
+
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");
+    settings.setProperty("foo", true);
+
+    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
+  }
 }

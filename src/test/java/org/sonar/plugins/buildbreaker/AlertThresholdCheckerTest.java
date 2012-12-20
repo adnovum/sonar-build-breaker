@@ -20,16 +20,10 @@
 
 package org.sonar.plugins.buildbreaker;
 
-import org.sonar.api.config.Settings;
-
-import org.junit.Before;
-
 import org.junit.Test;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
 import org.slf4j.Logger;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.MeasuresFilter;
@@ -38,24 +32,25 @@ import org.sonar.api.utils.SonarException;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class AlertThresholdCheckerTest {
-
-  private Settings settings;
-
- @Before
- public void setUp() {
-   settings = new Settings();
- }
 
   @Test
   public void doNotFailWhenNoAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(settings);
+    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-        newMeasure(CoreMetrics.LINES, null, null),
-        newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
-        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
+      newMeasure(CoreMetrics.LINES, null, null),
+      newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
+      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
     ));
 
     checker.analyseMeasures(context, logger);
@@ -65,13 +60,13 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void doNotFailWhenWarningAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(settings);
+    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-        newMeasure(CoreMetrics.LINES, null, null),
-        newMeasure(CoreMetrics.COVERAGE, Metric.Level.WARN, "Coverage<80"),
-        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
+      newMeasure(CoreMetrics.LINES, null, null),
+      newMeasure(CoreMetrics.COVERAGE, Metric.Level.WARN, "Coverage<80"),
+      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
     ));
 
     checker.analyseMeasures(context, logger);
@@ -82,13 +77,13 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void failWhenErrorAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(settings);
+    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-        newMeasure(CoreMetrics.LINES, null, null),
-        newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
-        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
+      newMeasure(CoreMetrics.LINES, null, null),
+      newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
+      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
     ));
 
     try {
@@ -103,13 +98,13 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void doNotfailWhenErrorAlertsButDisabled() {
-    settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
+    Settings settings = new Settings().setProperty(BuildBreakerPlugin.SKIP_KEY, true);
     AlertThresholdChecker checker = new AlertThresholdChecker(settings);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-        newMeasure(CoreMetrics.LINES, null, null),
-        newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
-        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
+      newMeasure(CoreMetrics.LINES, null, null),
+      newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
+      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
     ));
 
     checker.executeOn(null, context);
@@ -117,12 +112,12 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void doNotCheckGlobalAlertStatus() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(settings);
+    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-        newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
-        newMeasure(CoreMetrics.ALERT_STATUS, Metric.Level.ERROR, "Class complexity>50")
+      newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
+      newMeasure(CoreMetrics.ALERT_STATUS, Metric.Level.ERROR, "Class complexity>50")
     ));
 
     checker.analyseMeasures(context, logger);

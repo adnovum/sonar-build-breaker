@@ -24,28 +24,26 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.configuration.Configuration;
 
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
 import org.sonar.api.batch.BuildBreaker;
 
 public class ForbiddenConfigurationChecker extends BuildBreaker {
 
-  private Configuration configuration;
+  private final Settings settings;
 
-  public ForbiddenConfigurationChecker(Configuration configuration) {
-    this.configuration = configuration;
+  public ForbiddenConfigurationChecker(Settings settings) {
+    this.settings = settings;
   }
 
   public void executeOn(Project project, SensorContext context) {
-    String[] pairs = configuration.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
-    if (pairs==null) {
-      return;
-    }
+    String[] pairs = settings.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
     for (String pair : pairs) {
       String key = StringUtils.substringBefore(pair, "=");
       String value = StringUtils.substringAfter(pair, "=");
-      if (StringUtils.equals(value, configuration.getString(key))) {
-        fail("[BUILD BREAKER] Forbidden configuration detected: "+pair);
+      if (StringUtils.equals(value, settings.getString(key))) {
+        fail("[BUILD BREAKER] Forbidden configuration detected: " + pair);
       }
     }
   }

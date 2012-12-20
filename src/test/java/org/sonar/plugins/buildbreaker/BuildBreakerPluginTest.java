@@ -17,19 +17,17 @@
  * License along with Sonar; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-
 package org.sonar.plugins.buildbreaker;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class BuildBreakerPluginTest {
 
   @Test
-  public void oneExtensionIsRegistered() {
-    assertThat(new BuildBreakerPlugin().getExtensions().size(), is(2));
+  public void declare_extensions() {
+    assertThat(new BuildBreakerPlugin().getExtensions()).hasSize(2);
   }
 
 }
