@@ -20,13 +20,11 @@
 
 package org.sonar.plugins.buildbreaker;
 
-import org.sonar.api.Extension;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +45,6 @@ public class BuildBreakerPlugin extends SonarPlugin {
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
   public List getExtensions() {
-    return Arrays.asList(AlertThresholdChecker.class, ForbiddenConfigurationChecker.class);
+    return Arrays.asList(AlertBreaker.class, ForbiddenConfigurationBreaker.class);
   }
 }

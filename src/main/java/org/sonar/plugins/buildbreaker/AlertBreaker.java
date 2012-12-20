@@ -35,13 +35,13 @@ import org.sonar.api.resources.Project;
 
 import java.util.Collection;
 
-public class AlertThresholdChecker extends BuildBreaker {
+public class AlertBreaker extends BuildBreaker {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AlertThresholdChecker.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AlertBreaker.class);
 
   private final Settings settings;
 
-  public AlertThresholdChecker(Settings settings) {
+  public AlertBreaker(Settings settings) {
     this.settings = settings;
   }
 

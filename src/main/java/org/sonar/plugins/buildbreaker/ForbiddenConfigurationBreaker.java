@@ -29,11 +29,11 @@ import org.sonar.api.resources.Project;
 
 import org.sonar.api.batch.BuildBreaker;
 
-public class ForbiddenConfigurationChecker extends BuildBreaker {
+public class ForbiddenConfigurationBreaker extends BuildBreaker {
 
   private final Settings settings;
 
-  public ForbiddenConfigurationChecker(Settings settings) {
+  public ForbiddenConfigurationBreaker(Settings settings) {
     this.settings = settings;
   }
 

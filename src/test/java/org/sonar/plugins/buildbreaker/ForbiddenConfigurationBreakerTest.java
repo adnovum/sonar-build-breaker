@@ -25,14 +25,14 @@ import org.junit.rules.ExpectedException;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.SonarException;
 
-public class ForbiddenConfigurationCheckerTest {
+public class ForbiddenConfigurationBreakerTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void shouldNotFailWithoutAnyForbiddenConfSet() {
-    ForbiddenConfigurationChecker checker = new ForbiddenConfigurationChecker(new Settings());
+    ForbiddenConfigurationBreaker checker = new ForbiddenConfigurationBreaker(new Settings());
     checker.executeOn(null, null);
     // no exception expected
   }
@@ -46,7 +46,7 @@ public class ForbiddenConfigurationCheckerTest {
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
     settings.setProperty("foo", "bar");
 
-    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
+    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
   }
 
   @Test
@@ -55,7 +55,7 @@ public class ForbiddenConfigurationCheckerTest {
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
     settings.setProperty("foo", "other_value");
 
-    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
+    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
     // no exception expected
   }
 
@@ -68,6 +68,6 @@ public class ForbiddenConfigurationCheckerTest {
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");
     settings.setProperty("foo", true);
 
-    new ForbiddenConfigurationChecker(settings).executeOn(null, null);
+    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
   }
 }

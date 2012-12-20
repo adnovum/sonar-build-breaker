@@ -40,11 +40,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AlertThresholdCheckerTest {
+public class AlertBreakerTest {
 
   @Test
   public void doNotFailWhenNoAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
+    AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
@@ -60,7 +60,7 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void doNotFailWhenWarningAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
+    AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
@@ -77,7 +77,7 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void failWhenErrorAlerts() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
+    AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
@@ -99,7 +99,7 @@ public class AlertThresholdCheckerTest {
   @Test
   public void doNotfailWhenErrorAlertsButDisabled() {
     Settings settings = new Settings().setProperty(BuildBreakerPlugin.SKIP_KEY, true);
-    AlertThresholdChecker checker = new AlertThresholdChecker(settings);
+    AlertBreaker checker = new AlertBreaker(settings);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
       newMeasure(CoreMetrics.LINES, null, null),
@@ -112,7 +112,7 @@ public class AlertThresholdCheckerTest {
 
   @Test
   public void doNotCheckGlobalAlertStatus() {
-    AlertThresholdChecker checker = new AlertThresholdChecker(new Settings());
+    AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
     when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
