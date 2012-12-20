@@ -20,13 +20,11 @@
 
 package org.sonar.plugins.buildbreaker;
 
-import org.sonar.api.config.Settings;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.BuildBreaker;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.MeasuresFilters;
@@ -56,7 +54,7 @@ public class AlertBreaker extends BuildBreaker {
   protected void analyseMeasures(SensorContext context, Logger logger) {
     int count = countErrors(context, logger);
     if (count > 0) {
-      fail("[BUILD BREAKER] Alert thresholds have been hit (" + count + " times).");
+      fail("Alert thresholds have been hit (" + count + " times).");
     }
   }
 
@@ -65,7 +63,7 @@ public class AlertBreaker extends BuildBreaker {
     int count = 0;
     for (Measure measure : measures) {
       if (isErrorAlert(measure)) {
-        logger.error(measure.getAlertText());
+        logger.error(BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP + measure.getAlertText());
         count++;
       } else if (isWarningAlert(measure)) {
         logger.warn(measure.getAlertText());

@@ -42,6 +42,8 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
+  public static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
+
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
   public List getExtensions() {

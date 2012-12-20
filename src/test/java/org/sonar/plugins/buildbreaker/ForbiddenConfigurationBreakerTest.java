@@ -40,7 +40,7 @@ public class ForbiddenConfigurationBreakerTest {
   @Test
   public void should_fail_if_forbidden_property_is_set() {
     thrown.expect(SonarException.class);
-    thrown.expectMessage("[BUILD BREAKER] Forbidden configuration detected: foo=bar");
+    thrown.expectMessage("A forbidden configuration has been found on the project: foo=bar");
 
     Settings settings = new Settings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
@@ -62,7 +62,7 @@ public class ForbiddenConfigurationBreakerTest {
   @Test
   public void should_fail_if_forbidden_boolean_property_is_set() {
     thrown.expect(SonarException.class);
-    thrown.expectMessage("[BUILD BREAKER] Forbidden configuration detected: foo=true");
+    thrown.expectMessage("A forbidden configuration has been found on the project: foo=true");
 
     Settings settings = new Settings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");

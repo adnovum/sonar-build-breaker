@@ -34,7 +34,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -47,11 +47,11 @@ public class AlertBreakerTest {
     AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
-    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-      newMeasure(CoreMetrics.LINES, null, null),
-      newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
-      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
-    ));
+    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure> asList(
+        newMeasure(CoreMetrics.LINES, null, null),
+        newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
+        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
+        ));
 
     checker.analyseMeasures(context, logger);
 
@@ -63,11 +63,11 @@ public class AlertBreakerTest {
     AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
-    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-      newMeasure(CoreMetrics.LINES, null, null),
-      newMeasure(CoreMetrics.COVERAGE, Metric.Level.WARN, "Coverage<80"),
-      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
-    ));
+    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure> asList(
+        newMeasure(CoreMetrics.LINES, null, null),
+        newMeasure(CoreMetrics.COVERAGE, Metric.Level.WARN, "Coverage<80"),
+        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.OK, null)
+        ));
 
     checker.analyseMeasures(context, logger);
 
@@ -80,19 +80,19 @@ public class AlertBreakerTest {
     AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
-    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-      newMeasure(CoreMetrics.LINES, null, null),
-      newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
-      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
-    ));
+    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure> asList(
+        newMeasure(CoreMetrics.LINES, null, null),
+        newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
+        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
+        ));
 
     try {
       checker.analyseMeasures(context, logger);
       fail();
 
     } catch (SonarException e) {
-      verify(logger).error("Coverage<80");
-      verify(logger).error("Class complexity>50");
+      verify(logger).error("[BUILD BREAKER] Coverage<80");
+      verify(logger).error("[BUILD BREAKER] Class complexity>50");
     }
   }
 
@@ -101,11 +101,11 @@ public class AlertBreakerTest {
     Settings settings = new Settings().setProperty(BuildBreakerPlugin.SKIP_KEY, true);
     AlertBreaker checker = new AlertBreaker(settings);
     SensorContext context = mock(SensorContext.class);
-    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-      newMeasure(CoreMetrics.LINES, null, null),
-      newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
-      newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
-    ));
+    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure> asList(
+        newMeasure(CoreMetrics.LINES, null, null),
+        newMeasure(CoreMetrics.COVERAGE, Metric.Level.ERROR, "Coverage<80"),
+        newMeasure(CoreMetrics.CLASS_COMPLEXITY, Metric.Level.ERROR, "Class complexity>50")
+        ));
 
     checker.executeOn(null, context);
   }
@@ -115,10 +115,10 @@ public class AlertBreakerTest {
     AlertBreaker checker = new AlertBreaker(new Settings());
     Logger logger = mock(Logger.class);
     SensorContext context = mock(SensorContext.class);
-    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure>asList(
-      newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
-      newMeasure(CoreMetrics.ALERT_STATUS, Metric.Level.ERROR, "Class complexity>50")
-    ));
+    when(context.getMeasures((MeasuresFilter) anyObject())).thenReturn(Arrays.<Measure> asList(
+        newMeasure(CoreMetrics.COVERAGE, Metric.Level.OK, null),
+        newMeasure(CoreMetrics.ALERT_STATUS, Metric.Level.ERROR, "Class complexity>50")
+        ));
 
     checker.analyseMeasures(context, logger);
 

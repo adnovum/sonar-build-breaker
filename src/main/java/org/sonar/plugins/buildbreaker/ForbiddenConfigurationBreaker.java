@@ -20,16 +20,16 @@
 package org.sonar.plugins.buildbreaker;
 
 import org.apache.commons.lang.StringUtils;
-
-import org.apache.commons.configuration.Configuration;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.BuildBreaker;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 
-import org.sonar.api.batch.BuildBreaker;
-
 public class ForbiddenConfigurationBreaker extends BuildBreaker {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ForbiddenConfigurationBreaker.class);
 
   private final Settings settings;
 
@@ -43,7 +43,8 @@ public class ForbiddenConfigurationBreaker extends BuildBreaker {
       String key = StringUtils.substringBefore(pair, "=");
       String value = StringUtils.substringAfter(pair, "=");
       if (StringUtils.equals(value, settings.getString(key))) {
-        fail("[BUILD BREAKER] Forbidden configuration detected: " + pair);
+        LOG.error(BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP + "Forbidden configuration: " + pair);
+        fail("A forbidden configuration has been found on the project: " + pair);
       }
     }
   }
