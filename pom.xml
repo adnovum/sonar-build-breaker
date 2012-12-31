@@ -31,9 +31,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/sonar-plugins/trunk/build-breaker</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/sonar-plugins/trunk/build-breaker</developerConnection>
-    <url>http://svn.sonar-plugins.codehaus.org</url>
+    <connection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-build-breaker</url>
   </scm>
 
   <issueManagement>
