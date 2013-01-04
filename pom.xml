@@ -31,9 +31,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</developerConnection>
-    <url>https://github.com/SonarSource/sonar-build-breaker</url>
+    <connection>scm:git:git@github.com:SonarCommunity/sonar-build-breaker.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarCommunity/sonar-build-breaker.git</developerConnection>
+    <url>https://github.com/SonarCommunity/sonar-build-breaker</url>
   </scm>
 
   <issueManagement>
