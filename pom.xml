@@ -4,7 +4,6 @@
     <artifactId>parent</artifactId>
     <groupId>org.codehaus.sonar-plugins</groupId>
     <version>15</version>
-    <relativePath>../parent</relativePath>
   </parent>
 
   <artifactId>sonar-build-breaker-plugin</artifactId>
