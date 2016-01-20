@@ -1,7 +1,7 @@
 /*
- * Sonar Build Breaker Plugin
- * Copyright (C) 2009 SonarSource
- * dev@sonar.codehaus.org
+ * SonarQube Build Breaker Plugin
+ * Copyright (C) 2009-2016 SonarSource SA
+ * mailto:contact AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -13,9 +13,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package org.sonar.plugins.buildbreaker;
 
@@ -38,7 +38,7 @@ public class ForbiddenConfigurationBreakerTest {
   }
 
   @Test
-  public void should_fail_if_forbidden_property_is_set() {
+  public void shouldFailIfForbiddenPropertyIsSet() {
     thrown.expect(SonarException.class);
     thrown.expectMessage("A forbidden configuration has been found on the project: foo=bar");
 
@@ -50,7 +50,7 @@ public class ForbiddenConfigurationBreakerTest {
   }
 
   @Test
-  public void should_not_fail_if_forbidden_property_value_is_different() {
+  public void shouldNotFailIfForbiddenPropertyValueIsDifferent() {
     Settings settings = new Settings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
     settings.setProperty("foo", "other_value");
@@ -60,7 +60,7 @@ public class ForbiddenConfigurationBreakerTest {
   }
 
   @Test
-  public void should_fail_if_forbidden_boolean_property_is_set() {
+  public void shouldFailIfForbiddenBooleanPropertyIsSet() {
     thrown.expect(SonarException.class);
     thrown.expectMessage("A forbidden configuration has been found on the project: foo=true");
 

@@ -1,23 +1,22 @@
 /*
- * Sonar, open source software quality management tool.
- * Copyright (C) 2009 SonarSource
+ * SonarQube Build Breaker Plugin
+ * Copyright (C) 2009-2016 SonarSource SA
  * mailto:contact AT sonarsource DOT com
  *
- * Sonar is free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
  *
- * Sonar is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with Sonar; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.plugins.buildbreaker;
 
 import org.sonar.api.Properties;
@@ -34,7 +33,7 @@ import java.util.List;
     type = PropertyType.BOOLEAN),
   @Property(key = BuildBreakerPlugin.FORBIDDEN_CONF_KEY,
     name = "Forbidden configuration parameters",
-    description = "Comma-seperated list of 'key=value' pairs that should break the build",
+    description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
     global = true,
     project = false)
 })
@@ -46,7 +45,8 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
+  @Override
   public List getExtensions() {
-    return Arrays.asList(AlertBreaker.class, ForbiddenConfigurationBreaker.class);
+    return Arrays.asList(ForbiddenConfigurationBreaker.class);
   }
 }
