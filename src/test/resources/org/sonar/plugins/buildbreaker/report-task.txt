@@ -1,0 +1,5 @@
+projectKey=group:artifact:branch
+serverUrl=http://example.com:9000
+dashboardUrl=http://example.com:9000/dashboard/index/group:artifact:branch
+ceTaskId=AVKJ_h9DIK5ABR5tIoQ_
+ceTaskUrl=http://example.com:9000/api/ce/task?id=AVKJ_h9DIK5ABR5tIoQ_
