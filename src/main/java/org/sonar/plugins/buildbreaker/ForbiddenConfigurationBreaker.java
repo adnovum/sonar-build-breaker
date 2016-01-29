@@ -19,13 +19,15 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Splitter;
 import org.sonar.api.batch.BuildBreaker;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+
+import java.util.List;
 
 public class ForbiddenConfigurationBreaker extends BuildBreaker {
 
@@ -41,9 +43,13 @@ public class ForbiddenConfigurationBreaker extends BuildBreaker {
   public void executeOn(Project project, SensorContext context) {
     String[] pairs = settings.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
     for (String pair : pairs) {
-      String key = StringUtils.substringBefore(pair, "=");
-      String value = StringUtils.substringAfter(pair, "=");
-      if (StringUtils.equals(value, settings.getString(key))) {
+      List<String> split = Splitter.on('=').limit(2).splitToList(pair);
+      if (split.isEmpty()) {
+        continue;
+      }
+      String key = split.get(0);
+      String value = split.size() > 1 ? split.get(1) : "";
+      if (value.equals(settings.getString(key))) {
         LOG.error(BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP + "Forbidden configuration: " + pair);
         fail("A forbidden configuration has been found on the project: " + pair);
       }

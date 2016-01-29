@@ -21,13 +21,13 @@ package org.sonar.plugins.buildbreaker;
 
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 public class BuildBreakerPluginTest {
 
   @Test
   public void testDeclaredExtensions() {
-    assertThat(new BuildBreakerPlugin().getExtensions()).hasSize(2);
+    assertEquals(2, new BuildBreakerPlugin().getExtensions().size());
   }
 
 }
