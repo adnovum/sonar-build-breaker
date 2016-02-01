@@ -17,4 +17,4 @@ The property sonar.buildbreaker.forbidden.conf can be used to specify configurat
 
 ### Build status
 
-[![Build Status](https://api.travis-ci.org/SonarSource/sonar-build-breaker.svg)](https://travis-ci.org/SonarSource/sonar-build-breaker)
+[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker)

@@ -22,6 +22,13 @@
     <url>http://www.sonarsource.com</url>
   </organization>
 
+  <developers>
+    <developer>
+      <id>mjdetullio</id>
+      <name>Matthew DeTullio</name>
+    </developer>
+  </developers>
+
   <licenses>
     <license>
       <name>GNU LGPL 3</name>
@@ -31,16 +38,21 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarSource/sonar-build-breaker.git</developerConnection>
-    <url>https://github.com/SonarSource/sonar-build-breaker</url>
+    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</developerConnection>
+    <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
-    <system>JIRA</system>
-    <url>https://jira.sonarsource.com/browse/SONARPLUGINS/component/11250</url>
+    <system>GitHub</system>
+    <url>https://github.com/SonarQubeCommunity/sonar-build-breaker/issues</url>
   </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker</url>
+  </ciManagement>
 
   <properties>
     <sonar.version>5.3</sonar.version>
