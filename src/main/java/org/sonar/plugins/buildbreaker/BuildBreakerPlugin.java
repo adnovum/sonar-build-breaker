@@ -1,23 +1,22 @@
 /*
- * Sonar, open source software quality management tool.
- * Copyright (C) 2009 SonarSource
+ * SonarQube Build Breaker Plugin
+ * Copyright (C) 2009-2016 SonarSource SA
  * mailto:contact AT sonarsource DOT com
  *
- * Sonar is free software; you can redistribute it and/or
+ * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 3 of the License, or (at your option) any later version.
  *
- * Sonar is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with Sonar; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 package org.sonar.plugins.buildbreaker;
 
 import org.sonar.api.Properties;
@@ -29,12 +28,32 @@ import java.util.Arrays;
 import java.util.List;
 
 @Properties({
-  @Property(key = BuildBreakerPlugin.SKIP_KEY, defaultValue = "false", name = "Build Breaker skip on alert flag",
-    description = "If set to true breaks on alerts are disabled. By default breaks on alerts are enabled.", global = true, project = true,
+  @Property(key = BuildBreakerPlugin.SKIP_KEY,
+    defaultValue = "false",
+    name = "Skip quality gate check",
+    description = "If set to true, the quality gate is not checked.  By default the build will break if the project does not pass the quality gate.",
+    global = true,
+    project = true,
     type = PropertyType.BOOLEAN),
+  @Property(key = BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY,
+    defaultValue = "30",
+    name = "API query max attempts",
+    description = "The maximum number of queries to the API when waiting for report processing.  The build will break if this is reached." +
+      "<br/>" + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION,
+    global = true,
+    project = true,
+    type = PropertyType.INTEGER),
+  @Property(key = BuildBreakerPlugin.QUERY_INTERVAL_KEY,
+    defaultValue = "10000",
+    name = "API query interval (ms)",
+    description = "The interval between queries to the API when waiting for report processing." +
+      "<br/>" + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION,
+    global = true,
+    project = true,
+    type = PropertyType.INTEGER),
   @Property(key = BuildBreakerPlugin.FORBIDDEN_CONF_KEY,
     name = "Forbidden configuration parameters",
-    description = "Comma-seperated list of 'key=value' pairs that should break the build",
+    description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
     global = true,
     project = false)
 })
@@ -42,11 +61,19 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
+  public static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
+
+  public static final String QUERY_INTERVAL_KEY = "sonar.buildbreaker.queryInterval";
+
+  public static final String TOTAL_WAIT_TIME_DESCRIPTION = "Total wait time is <code>" +
+      BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY + " * " + BuildBreakerPlugin.QUERY_INTERVAL_KEY + "</code>.";
+
   public static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
 
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
+  @Override
   public List getExtensions() {
-    return Arrays.asList(AlertBreaker.class, ForbiddenConfigurationBreaker.class);
+    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class);
   }
 }
