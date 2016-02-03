@@ -7,19 +7,19 @@
     <version>26</version>
   </parent>
 
-  <groupId>org.sonarqube.buildbreaker</groupId>
+  <groupId>org.sonarqubecommunity.buildbreaker</groupId>
   <artifactId>sonar-build-breaker-plugin</artifactId>
   <version>2.0-SNAPSHOT</version>
   <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Build Breaker Plugin</name>
-  <description>Break the analysis batch if the project does not pass the quality gate</description>
-  <url>http://redirect.sonarsource.com/plugins/buildbreaker.html</url>
+  <description>Break the analyzer if the project does not pass its Quality Gate</description>
+  <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
   <inceptionYear>2009</inceptionYear>
 
   <organization>
-    <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
+    <name>Matthew DeTullio and contributors</name>
+    <url>mailto:sonarqube@googlegroups.com</url>
   </organization>
 
   <developers>
@@ -55,6 +55,8 @@
   </ciManagement>
 
   <properties>
+    <license.owner>${project.organization.name}</license.owner>
+    <license.mailto>${project.organization.url}</license.mailto>
     <sonar.version>5.3</sonar.version>
     <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
