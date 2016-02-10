@@ -2,7 +2,22 @@
 
 [![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker)
 
-Download and version information: http://update.sonarsource.org/plugins/buildbreaker-confluence.html
+## Compatibility
+
+| SonarQube Version | Plugin Version(s) |
+|-------------------|-------------------|
+| 4.5 (LTS)         | 1.1 |
+| 5.0               | 1.1 |
+| 5.1               | 1.1 |
+| 5.2               | Not compatibile due to limitations with SonarQube platform |
+| 5.3               | 2.0 |
+
+## Download and Installation
+
+1. Download the appropriate `sonar-build-breaker-plugin-${version}.jar` file from the [releases page](https://github.com/SonarQubeCommunity/sonar-build-breaker/releases), based on the compatibility chart
+2. Copy the plugin into `/path/to/sonarqube/extensions/plugins/`
+3. Remove older versions of the plugin from `/path/to/sonarqube/extensions/plugins/`, if present
+4. Restart SonarQube
 
 ## Description
 
