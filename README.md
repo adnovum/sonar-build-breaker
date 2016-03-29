@@ -1,6 +1,6 @@
 # SonarQube Build Breaker Plugin
 
-[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker)
+[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker) [![Nemo Quality Gate status](https://nemo.sonarqube.org/api/badges/gate?key=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)](https://nemo.sonarqube.org/overview?id=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)
 
 ## Compatibility
 
