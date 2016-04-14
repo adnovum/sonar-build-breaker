@@ -10,7 +10,9 @@
 | 5.0               | 1.1 |
 | 5.1               | 1.1 |
 | 5.2               | Not compatibile due to limitations with SonarQube platform |
-| 5.3               | 2.0 |
+| 5.3               | 2.0, 2.1 |
+| 5.4               | 2.0, 2.1 |
+| 5.5               | 2.1 |
 
 ## Download and Installation
 
