@@ -22,6 +22,7 @@ package org.sonar.plugins.buildbreaker;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
 import org.sonar.api.CoreProperties;
+import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.BuildBreaker;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
@@ -58,17 +59,19 @@ public class QualityGateBreaker extends BuildBreaker {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
+  private final AnalysisMode analysisMode;
   private final FileSystem fileSystem;
   private final Settings settings;
 
-  public QualityGateBreaker(FileSystem fileSystem, Settings settings) {
+  public QualityGateBreaker(AnalysisMode analysisMode, FileSystem fileSystem, Settings settings) {
+    this.analysisMode = analysisMode;
     this.fileSystem = fileSystem;
     this.settings = settings;
   }
 
   @Override
   public void executeOn(Project project, SensorContext context) {
-    if (!context.analysisMode().isPublish()) {
+    if (!analysisMode.isPublish()) {
       LOGGER.debug("{} is disabled ({} != {})", CLASSNAME, CoreProperties.ANALYSIS_MODE, CoreProperties.ANALYSIS_MODE_PUBLISH);
       return;
     }

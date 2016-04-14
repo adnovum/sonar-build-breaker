@@ -70,41 +70,42 @@ public class QualityGateBreakerTest {
 
   @Test
   public void testDisabledFromWrongAnalysisMode() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(false);
+
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new Settings();
 
     Project project = mock(Project.class);
     SensorContext sensorContext = mock(SensorContext.class);
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-
-    when(sensorContext.analysisMode()).thenReturn(analysisMode);
-    when(analysisMode.isPublish()).thenReturn(false);
 
     // No exception
 
-    new QualityGateBreaker(fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
   }
 
   @Test
   public void testDisabledFromSkipSetting() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new Settings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
 
     Project project = mock(Project.class);
     SensorContext sensorContext = mock(SensorContext.class);
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-
-    when(sensorContext.analysisMode()).thenReturn(analysisMode);
-    when(analysisMode.isPublish()).thenReturn(true);
 
     // No exception
 
-    new QualityGateBreaker(fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
   }
 
   @Test
   public void testNoReportTaskTxtFile() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -112,15 +113,12 @@ public class QualityGateBreakerTest {
 
     Project project = mock(Project.class);
     SensorContext sensorContext = mock(SensorContext.class);
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(sensorContext.analysisMode()).thenReturn(analysisMode);
-    when(analysisMode.isPublish()).thenReturn(true);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
     thrown.expectMessage("Unable to load properties from file");
 
-    new QualityGateBreaker(fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
   }
 
   /**
@@ -129,6 +127,9 @@ public class QualityGateBreakerTest {
    */
   @Test
   public void testQueryMaxAttemptsReached() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
     FileSystem fileSystem = mock(FileSystem.class);
     when(fileSystem.workDir()).thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
 
@@ -137,18 +138,16 @@ public class QualityGateBreakerTest {
 
     Project project = mock(Project.class);
     SensorContext sensorContext = mock(SensorContext.class);
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(sensorContext.analysisMode()).thenReturn(analysisMode);
-    when(analysisMode.isPublish()).thenReturn(true);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
   }
 
   @Test
   public void testSingleQueryInProgressStatus() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -170,11 +169,12 @@ public class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
   public void testSingleQueryPendingStatus() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -196,11 +196,12 @@ public class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
   public void testSingleQueryFailedStatus() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -222,11 +223,12 @@ public class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: FAILED");
 
-    new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
   public void testSingleQueryCanceledStatus() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -248,11 +250,12 @@ public class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: CANCELED");
 
-    new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
   public void testSingleQuerySuccessStatus() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -271,12 +274,13 @@ public class QualityGateBreakerTest {
     when(TaskResponse.parseFrom(any(InputStream.class))).thenReturn(taskResponse);
     when(taskResponse.getTask()).thenReturn(task);
 
-    String analysisId = new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    String analysisId = new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
     assertEquals(TEST_ANALYSIS_ID, analysisId);
   }
 
   @Test
   public void testSingleQueryIOException() throws IOException {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -295,11 +299,12 @@ public class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
 
-    new QualityGateBreaker(fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
   public void testQualityGateStatusWarning() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -315,11 +320,12 @@ public class QualityGateBreakerTest {
 
     // No exception
 
-    new QualityGateBreaker(fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
   public void testQualityGateStatusError() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -336,11 +342,12 @@ public class QualityGateBreakerTest {
     thrown.expect(SonarException.class);
     thrown.expectMessage("Project does not pass the quality gate.");
 
-    new QualityGateBreaker(fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
   public void testQualityGateStatusOk() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
     FileSystem fileSystem = mock(FileSystem.class);
 
     Settings settings = new Settings();
@@ -356,7 +363,7 @@ public class QualityGateBreakerTest {
 
     // No exception
 
-    new QualityGateBreaker(fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
