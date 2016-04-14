@@ -205,7 +205,7 @@ public class QualityGateBreaker extends BuildBreaker {
       Metric metric = CoreMetrics.getMetric(metricKey);
       return metric.getName();
     } catch (NoSuchElementException e) {
-      // Custom metric -- use key as name
+      LOGGER.trace("Using key as name for custom metric '{}' due to '{}'", metricKey, e);
     }
     return metricKey;
   }
