@@ -32,7 +32,6 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.utils.SonarException;
 import org.sonarqube.ws.WsCe.Task;
 import org.sonarqube.ws.WsCe.TaskResponse;
 import org.sonarqube.ws.WsCe.TaskStatus;
@@ -339,7 +338,7 @@ public class QualityGateBreakerTest {
     when(wsClient.qualityGates()).thenReturn(qualityGatesService);
     when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class))).thenReturn(projectStatusWsResponse);
 
-    thrown.expect(SonarException.class);
+    thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Project does not pass the quality gate.");
 
     new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);

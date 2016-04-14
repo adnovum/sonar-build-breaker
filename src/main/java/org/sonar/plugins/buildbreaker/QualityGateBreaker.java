@@ -23,7 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
-import org.sonar.api.batch.BuildBreaker;
+import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
-public class QualityGateBreaker extends BuildBreaker {
+public class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
@@ -172,7 +172,7 @@ public class QualityGateBreaker extends BuildBreaker {
 
     if (Status.ERROR.equals(status)) {
       LOGGER.error("{}Project did not meet {} conditions", BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP, errors);
-      fail("Project does not pass the quality gate.");
+      throw new IllegalStateException("Project does not pass the quality gate.");
     }
   }
 

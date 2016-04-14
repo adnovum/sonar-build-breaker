@@ -20,7 +20,7 @@
 package org.sonar.plugins.buildbreaker;
 
 import com.google.common.base.Splitter;
-import org.sonar.api.batch.BuildBreaker;
+import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
@@ -29,7 +29,7 @@ import org.sonar.api.utils.log.Loggers;
 
 import java.util.List;
 
-public class ForbiddenConfigurationBreaker extends BuildBreaker {
+public class ForbiddenConfigurationBreaker implements PostJob {
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
@@ -51,7 +51,7 @@ public class ForbiddenConfigurationBreaker extends BuildBreaker {
       String value = split.size() > 1 ? split.get(1) : "";
       if (value.equals(settings.getString(key))) {
         LOG.error(BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP + "Forbidden configuration: " + pair);
-        fail("A forbidden configuration has been found on the project: " + pair);
+        throw new IllegalStateException("A forbidden configuration has been found on the project: " + pair);
       }
     }
   }

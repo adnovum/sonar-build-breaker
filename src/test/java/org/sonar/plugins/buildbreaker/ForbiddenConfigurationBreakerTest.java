@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.config.Settings;
-import org.sonar.api.utils.SonarException;
 
 public class ForbiddenConfigurationBreakerTest {
 
@@ -39,7 +38,7 @@ public class ForbiddenConfigurationBreakerTest {
 
   @Test
   public void shouldFailIfForbiddenPropertyIsSet() {
-    thrown.expect(SonarException.class);
+    thrown.expect(IllegalStateException.class);
     thrown.expectMessage("A forbidden configuration has been found on the project: foo=bar");
 
     Settings settings = new Settings();
@@ -61,7 +60,7 @@ public class ForbiddenConfigurationBreakerTest {
 
   @Test
   public void shouldFailIfForbiddenBooleanPropertyIsSet() {
-    thrown.expect(SonarException.class);
+    thrown.expect(IllegalStateException.class);
     thrown.expectMessage("A forbidden configuration has been found on the project: foo=true");
 
     Settings settings = new Settings();
