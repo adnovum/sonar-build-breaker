@@ -55,6 +55,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
+/**
+ * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks the project's quality
+ * gate.  Breaks the build if the quality gate has failed.
+ */
 public class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
@@ -63,6 +67,13 @@ public class QualityGateBreaker implements PostJob {
   private final FileSystem fileSystem;
   private final Settings settings;
 
+  /**
+   * Constructor used to inject dependencies.
+   *
+   * @param analysisMode the analysis mode
+   * @param fileSystem the analysis' file system
+   * @param settings the project settings
+   */
   public QualityGateBreaker(AnalysisMode analysisMode, FileSystem fileSystem, Settings settings) {
     this.analysisMode = analysisMode;
     this.fileSystem = fileSystem;

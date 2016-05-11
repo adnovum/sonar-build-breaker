@@ -29,12 +29,21 @@ import org.sonar.api.utils.log.Loggers;
 
 import java.util.List;
 
+/**
+ * Checks the analysis parameters for forbidden configurations.  Breaks the build if at least one of the
+ * comma-separated key=value configurations was found.
+ */
 public class ForbiddenConfigurationBreaker implements PostJob {
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
   private final Settings settings;
 
+  /**
+   * Constructor used to inject dependencies.
+   *
+   * @param settings the project settings
+   */
   public ForbiddenConfigurationBreaker(Settings settings) {
     this.settings = settings;
   }

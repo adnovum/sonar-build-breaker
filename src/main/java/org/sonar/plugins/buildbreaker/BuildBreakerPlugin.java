@@ -27,6 +27,9 @@ import org.sonar.api.SonarPlugin;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Registers the plugin with SonarQube and defines the available configuration properties.
+ */
 @Properties({
   @Property(key = BuildBreakerPlugin.SKIP_KEY,
     defaultValue = "false",
