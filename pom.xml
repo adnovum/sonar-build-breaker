@@ -9,7 +9,7 @@
 
   <groupId>org.sonarqubecommunity.buildbreaker</groupId>
   <artifactId>sonar-build-breaker-plugin</artifactId>
-  <version>2.1-SNAPSHOT</version>
+  <version>2.1</version>
   <packaging>sonar-plugin</packaging>
 
   <name>SonarQube Build Breaker Plugin</name>
@@ -41,7 +41,7 @@
     <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</connection>
     <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</developerConnection>
     <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
-    <tag>HEAD</tag>
+    <tag>2.1</tag>
   </scm>
 
   <issueManagement>
