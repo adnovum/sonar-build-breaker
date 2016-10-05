@@ -58,6 +58,12 @@ import java.util.List;
     name = "Forbidden configuration parameters",
     description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
     global = true,
+    project = false),
+  @Property(key = BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY,
+    name = "Alternative server URL",
+    description = "URL to use for web service requests. If unset, uses the <code>serverUrl</code> property from " +
+      "<code>${sonar.working.directory}/report-task.txt</code>.",
+    global = true,
     project = false)
 })
 public class BuildBreakerPlugin extends SonarPlugin {
@@ -74,6 +80,8 @@ public class BuildBreakerPlugin extends SonarPlugin {
   public static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
 
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
+
+  public static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
   @Override
   public List getExtensions() {
