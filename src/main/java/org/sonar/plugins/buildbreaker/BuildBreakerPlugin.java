@@ -23,6 +23,7 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.rule.Severity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +59,16 @@ import java.util.List;
     name = "Forbidden configuration parameters",
     description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
     global = true,
-    project = false)
+    project = false) ,
+  @Property(key = BuildBreakerPlugin.FAIL_FOR_ISSUES_WITH_SEVERITY_KEY,
+    name = "Severity to fail preview analysis",
+    description = "Fails the build for preview analysis modes if the severity of issues is equal or more severe",
+    type = PropertyType.SINGLE_SELECT_LIST,
+    options = {BuildBreakerPlugin.FAIL_FOR_ISSUES_DISABLED, 
+        Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL, Severity.BLOCKER},
+    defaultValue = Severity.MAJOR,
+    global = true,
+    project = true)  
 })
 public class BuildBreakerPlugin extends SonarPlugin {
 
@@ -75,8 +85,12 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
+  public static final String FAIL_FOR_ISSUES_WITH_SEVERITY_KEY = "sonar.buildbreaker.preview.failForIssuesWithSeverity";
+  public static final String FAIL_FOR_ISSUES_DISABLED = "DISABLED";
+
+  
   @Override
   public List getExtensions() {
-    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class);
+    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class, BasicIssuesBuildBreaker.class);
   }
 }
