@@ -58,11 +58,20 @@ import java.util.List;
     name = "Forbidden configuration parameters",
     description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
     global = true,
-    project = false)
+    project = false),
+  @Property(key = BuildBreakerPlugin.SKIP_FOR_PREVIEW,
+  defaultValue = "true",
+  name = "Skip quality gate check for Preview analysis Mode",
+  description = "If set to true, the quality gate is not checked for preview mode.  By default the build will not break if sona ris executed in Preview mode.",
+  global = true,
+  project = true,
+  type = PropertyType.BOOLEAN)
 })
 public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String SKIP_KEY = "sonar.buildbreaker.skip";
+  
+  public static final String SKIP_FOR_PREVIEW = "sonar.buildbreaker.skip_preview";
 
   public static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
 

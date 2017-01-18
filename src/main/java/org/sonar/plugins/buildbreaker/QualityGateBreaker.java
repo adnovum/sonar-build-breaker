@@ -81,19 +81,25 @@ public class QualityGateBreaker implements PostJob {
   }
 
   @Override
-  public void executeOn(Project project, SensorContext context) {
-    if (!analysisMode.isPublish()) {
-      LOGGER.debug("{} is disabled ({} != {})", CLASSNAME, CoreProperties.ANALYSIS_MODE, CoreProperties.ANALYSIS_MODE_PUBLISH);
-      return;
-    }
+	public void executeOn(Project project, SensorContext context) {
+		if (!analysisMode.isPublish()) {
+			if (analysisMode.isPreview() && !settings.getBoolean(BuildBreakerPlugin.SKIP_FOR_PREVIEW)) {
+				LOGGER.debug("{} Not Skipping due to {} != {}) for setting {}", CLASSNAME, CoreProperties.ANALYSIS_MODE,
+						CoreProperties.ANALYSIS_MODE_PUBLISH,BuildBreakerPlugin.SKIP_FOR_PREVIEW);
+			} else {
+				LOGGER.debug("{} is disabled ({} != {})", CLASSNAME, CoreProperties.ANALYSIS_MODE,
+						CoreProperties.ANALYSIS_MODE_PUBLISH);
+				return;
+			}
+		}
 
-    if (settings.getBoolean(BuildBreakerPlugin.SKIP_KEY)) {
-      LOGGER.debug("{} is disabled ({} = true)", CLASSNAME, BuildBreakerPlugin.SKIP_KEY);
-      return;
-    }
+		if (settings.getBoolean(BuildBreakerPlugin.SKIP_KEY)) {
+			LOGGER.debug("{} is disabled ({} = true)", CLASSNAME, BuildBreakerPlugin.SKIP_KEY);
+			return;
+		}
 
-    execute();
-  }
+		execute();
+	}
 
   private void execute() {
     Properties reportTaskProps = loadReportTaskProps();
