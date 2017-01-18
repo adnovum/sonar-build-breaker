@@ -377,4 +377,56 @@ public class QualityGateBreakerTest {
     int errors = QualityGateBreaker.logConditions(conditions);
     assertEquals(2, errors);
   }
+  
+  @Test
+  public void testDisableForPreviewModeWithDefaultSettings() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(false);
+
+    FileSystem fileSystem = mock(FileSystem.class);
+    Settings settings = new Settings();
+    Project project = mock(Project.class);
+    SensorContext sensorContext = mock(SensorContext.class);
+
+    // No exception
+
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
+  }
+  
+  @Test
+  public void testDisableForPreviewModeWithFlagFalseAnalysisMode() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(false);
+    when(analysisMode.isPreview()).thenReturn(true);
+
+    FileSystem fileSystem = mock(FileSystem.class);
+    when(fileSystem.workDir()).thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.SKIP_FOR_PREVIEW, false);
+    Project project = mock(Project.class);
+    SensorContext sensorContext = mock(SensorContext.class);
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
+
+
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
+  }
+  
+  @Test
+  public void testEnableForPreviewModeWithFlagTrueAnalysisMode() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(false);
+    when(analysisMode.isPreview()).thenReturn(true);
+
+    FileSystem fileSystem = mock(FileSystem.class);
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.SKIP_FOR_PREVIEW, true);
+    Project project = mock(Project.class);
+    SensorContext sensorContext = mock(SensorContext.class);
+
+    // No exception
+
+    new QualityGateBreaker(analysisMode, fileSystem, settings).executeOn(project, sensorContext);
+  }
 }
