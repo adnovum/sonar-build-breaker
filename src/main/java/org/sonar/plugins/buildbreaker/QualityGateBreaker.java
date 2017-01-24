@@ -20,6 +20,7 @@
 package org.sonar.plugins.buildbreaker;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
@@ -99,7 +100,7 @@ public class QualityGateBreaker implements PostJob {
     Properties reportTaskProps = loadReportTaskProps();
 
     HttpConnector httpConnector = new HttpConnector.Builder()
-        .url(reportTaskProps.getProperty("serverUrl"))
+        .url(getServerUrl(reportTaskProps))
         .credentials(settings.getString(CoreProperties.LOGIN), settings.getString(CoreProperties.PASSWORD))
         .build();
 
@@ -108,6 +109,17 @@ public class QualityGateBreaker implements PostJob {
     String analysisId = getAnalysisId(wsClient, reportTaskProps.getProperty("ceTaskId"));
 
     checkQualityGate(wsClient, analysisId);
+  }
+
+  private String getServerUrl(Properties reportTaskProps) {
+    String altServerUrl = settings.getString(BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY);
+    if (Strings.isNullOrEmpty(altServerUrl)) {
+      return reportTaskProps.getProperty("serverUrl");
+    } else {
+      LOGGER.debug("Using alternative server URL ({}): {}", BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY,
+          altServerUrl);
+      return altServerUrl;
+    }
   }
 
   private Properties loadReportTaskProps() {
