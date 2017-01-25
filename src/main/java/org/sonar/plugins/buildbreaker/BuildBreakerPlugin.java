@@ -23,6 +23,7 @@ import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
+import org.sonar.api.rule.Severity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +65,16 @@ import java.util.List;
     description = "URL to use for web service requests. If unset, uses the <code>serverUrl</code> property from " +
       "<code>${sonar.working.directory}/report-task.txt</code>.",
     global = true,
-    project = false)
+    project = false),
+  @Property(key = BuildBreakerPlugin.FAIL_FOR_ISSUES_WITH_SEVERITY_KEY,
+    name = "Severity to fail preview analysis",
+    description = "Fails the build for preview analysis modes if the severity of issues is equal or more severe",
+    type = PropertyType.SINGLE_SELECT_LIST,
+    options = {BuildBreakerPlugin.FAIL_FOR_ISSUES_DISABLED, 
+        Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL, Severity.BLOCKER},
+    defaultValue = Severity.MAJOR,
+    global = true,
+    project = true)
 })
 public class BuildBreakerPlugin extends SonarPlugin {
 
@@ -83,8 +93,11 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
+  public static final String FAIL_FOR_ISSUES_WITH_SEVERITY_KEY = "sonar.buildbreaker.preview.failForIssuesWithSeverity";
+  public static final String FAIL_FOR_ISSUES_DISABLED = "DISABLED";
+
   @Override
   public List getExtensions() {
-    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class);
+    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class, BasicIssuesBuildBreaker.class);
   }
 }
