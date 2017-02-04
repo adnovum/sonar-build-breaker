@@ -168,8 +168,8 @@ public final class QualityGateBreaker implements PostJob {
       }
     }
 
-    LOGGER.error("{}API query limit ({}) reached.  Try increasing {}, {}, or both.",
-        BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP,
+    LOGGER.error("{} API query limit ({}) reached.  Try increasing {}, {}, or both.",
+        BuildBreakerPlugin.LOG_STAMP,
         queryMaxAttempts,
         BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY,
         BuildBreakerPlugin.QUERY_INTERVAL_KEY);
@@ -194,7 +194,7 @@ public final class QualityGateBreaker implements PostJob {
     }
 
     if (Status.ERROR.equals(status)) {
-      LOGGER.error("{}Project did not meet {} conditions", BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP, errors);
+      LOGGER.error("{} Project did not meet {} conditions", BuildBreakerPlugin.LOG_STAMP, errors);
       throw new IllegalStateException("Project does not pass the quality gate.");
     }
   }

@@ -33,16 +33,17 @@ import java.util.List;
  */
 public final class BuildBreakerPlugin extends SonarPlugin {
 
+  static final String LOG_STAMP = "[BUILD BREAKER]";
+
   static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
   static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
 
   static final String QUERY_INTERVAL_KEY = "sonar.buildbreaker.queryInterval";
 
-  private static final String TOTAL_WAIT_TIME_DESCRIPTION = "Total wait time is <code>" +
-      BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY + " * " + BuildBreakerPlugin.QUERY_INTERVAL_KEY + "</code>.";
-
-  static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
+  private static final String TOTAL_WAIT_TIME_DESCRIPTION =
+      String.format("Total wait time is <code>%s * %s</code>.",
+          BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, BuildBreakerPlugin.QUERY_INTERVAL_KEY);
 
   static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 

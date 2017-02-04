@@ -59,7 +59,7 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
       String key = split.get(0);
       String value = split.size() > 1 ? split.get(1) : "";
       if (value.equals(settings.getString(key))) {
-        LOG.error(BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP + "Forbidden configuration: " + pair);
+        LOG.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
         throw new IllegalStateException("A forbidden configuration has been found on the project: " + pair);
       }
     }

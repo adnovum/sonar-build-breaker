@@ -103,7 +103,7 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
   @Override
   public void onPostJobsPhase(PostJobsPhaseEvent event) {
     if (event.isEnd() && failureMessage != null) {
-      LOG.error("{}{}", BuildBreakerPlugin.BUILD_BREAKER_LOG_STAMP, failureMessage);
+      LOG.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
       throw new IllegalStateException(failureMessage);
     }
   }
