@@ -98,6 +98,6 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return Arrays.asList(ForbiddenConfigurationBreaker.class, QualityGateBreaker.class, BasicIssuesBuildBreaker.class);
+    return Arrays.asList(ForbiddenConfigurationBreaker.class, IssuesSeverityBreaker.class, QualityGateBreaker.class);
   }
 }

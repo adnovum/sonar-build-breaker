@@ -32,8 +32,8 @@ import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-public class BasicIssuesBuildBreaker implements PostJob, PostJobsPhaseHandler {
-  private static final String CLASSNAME = BasicIssuesBuildBreaker.class.getSimpleName();
+public class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
+  private static final String CLASSNAME = IssuesSeverityBreaker.class.getSimpleName();
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
@@ -44,7 +44,7 @@ public class BasicIssuesBuildBreaker implements PostJob, PostJobsPhaseHandler {
   
   String failureMessage = null;
   
-  public BasicIssuesBuildBreaker(AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
+  public IssuesSeverityBreaker(AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
     this.analysisMode = analysisMode;
     this.projectIssues = projectIssues;
     
