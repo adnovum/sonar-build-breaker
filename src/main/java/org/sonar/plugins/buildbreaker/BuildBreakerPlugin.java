@@ -36,7 +36,6 @@ import java.util.List;
     defaultValue = "false",
     name = "Skip quality gate check",
     description = "If set to true, the quality gate is not checked.  By default the build will break if the project does not pass the quality gate.",
-    global = true,
     project = true,
     type = PropertyType.BOOLEAN),
   @Property(key = BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY,
@@ -44,7 +43,6 @@ import java.util.List;
     name = "API query max attempts",
     description = "The maximum number of queries to the API when waiting for report processing.  The build will break if this is reached." +
       "<br/>" + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION,
-    global = true,
     project = true,
     type = PropertyType.INTEGER),
   @Property(key = BuildBreakerPlugin.QUERY_INTERVAL_KEY,
@@ -52,27 +50,21 @@ import java.util.List;
     name = "API query interval (ms)",
     description = "The interval between queries to the API when waiting for report processing." +
       "<br/>" + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION,
-    global = true,
     project = true,
     type = PropertyType.INTEGER),
   @Property(key = BuildBreakerPlugin.FORBIDDEN_CONF_KEY,
     name = "Forbidden configuration parameters",
-    description = "Comma-separated list of <code>key=value</code> pairs that should break the build.",
-    global = true,
-    project = false),
+    description = "Comma-separated list of <code>key=value</code> pairs that should break the build."),
   @Property(key = BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY,
     name = "Alternative server URL",
     description = "URL to use for web service requests. If unset, uses the <code>serverUrl</code> property from " +
-      "<code>${sonar.working.directory}/report-task.txt</code>.",
-    global = true,
-    project = false),
+      "<code>${sonar.working.directory}/report-task.txt</code>."),
   @Property(key = BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
     name = "Issues severity failure level (preview analysis)",
     description = "Fails the build in preview analysis mode if the severity of issues is equal or more severe than the selection.",
     type = PropertyType.SINGLE_SELECT_LIST,
     options = {BuildBreakerPlugin.DISABLED, Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL, Severity.BLOCKER},
     defaultValue = BuildBreakerPlugin.DISABLED,
-    global = true,
     project = true)
 })
 public final class BuildBreakerPlugin extends SonarPlugin {
