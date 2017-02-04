@@ -26,8 +26,7 @@ import org.sonar.api.config.Settings;
 
 public final class ForbiddenConfigurationBreakerTest {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void shouldNotFailWithoutAnyForbiddenConfSet() {

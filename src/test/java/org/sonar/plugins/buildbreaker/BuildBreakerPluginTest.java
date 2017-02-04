@@ -19,9 +19,9 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public final class BuildBreakerPluginTest {
 
@@ -29,5 +29,4 @@ public final class BuildBreakerPluginTest {
   public void testDeclaredExtensions() {
     assertEquals(9, new BuildBreakerPlugin().getExtensions().size());
   }
-
 }

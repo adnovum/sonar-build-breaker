@@ -19,7 +19,17 @@
  */
 package org.sonar.plugins.buildbreaker;
 
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,25 +57,13 @@ import org.sonarqube.ws.client.WsResponse;
 import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
 import org.sonarqube.ws.client.qualitygate.QualityGatesService;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TaskResponse.class)
 public final class QualityGateBreakerTest {
   private static final String TEST_TASK_ID = "Abc123";
   private static final String TEST_ANALYSIS_ID = "Def456";
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void testDisabledFromWrongAnalysisMode() {
@@ -121,8 +119,8 @@ public final class QualityGateBreakerTest {
   }
 
   /**
-   * Mock everything up until a query would be attempted.  Because max attempts is unset, it defaults to 0.  Expect
-   * immediate failure.
+   * Mock everything up until a query would be attempted. Because max attempts is unset, it defaults
+   * to 0. Expect immediate failure.
    */
   @Test
   public void testQueryMaxAttemptsReached() {
@@ -130,7 +128,8 @@ public final class QualityGateBreakerTest {
     when(analysisMode.isPublish()).thenReturn(true);
 
     FileSystem fileSystem = mock(FileSystem.class);
-    when(fileSystem.workDir()).thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
+    when(fileSystem.workDir())
+        .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
 
     Settings settings = new Settings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
@@ -168,7 +167,8 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -195,7 +195,8 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -222,7 +223,8 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: FAILED");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -249,7 +251,8 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: CANCELED");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -266,14 +269,17 @@ public final class QualityGateBreakerTest {
     // yuck
     PowerMockito.mockStatic(TaskResponse.class);
     TaskResponse taskResponse = mock(TaskResponse.class);
-    Task task = Task.newBuilder().setStatus(TaskStatus.SUCCESS).setAnalysisId(TEST_ANALYSIS_ID).build();
+    Task task =
+        Task.newBuilder().setStatus(TaskStatus.SUCCESS).setAnalysisId(TEST_ANALYSIS_ID).build();
 
     when(wsClient.wsConnector()).thenReturn(wsConnector);
     when(wsConnector.call(any(WsRequest.class))).thenReturn(wsResponse);
     when(TaskResponse.parseFrom(any(InputStream.class))).thenReturn(taskResponse);
     when(taskResponse.getTask()).thenReturn(task);
 
-    String analysisId = new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    String analysisId =
+        new QualityGateBreaker(analysisMode, fileSystem, settings)
+            .getAnalysisId(wsClient, TEST_TASK_ID);
     assertEquals(TEST_ANALYSIS_ID, analysisId);
   }
 
@@ -298,7 +304,8 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -312,14 +319,17 @@ public final class QualityGateBreakerTest {
     WsClient wsClient = mock(WsClient.class);
     QualityGatesService qualityGatesService = mock(QualityGatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.WARN).build();
-    ProjectStatusWsResponse projectStatusWsResponse = ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusWsResponse projectStatusWsResponse =
+        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
 
     when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class))).thenReturn(projectStatusWsResponse);
+    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+        .thenReturn(projectStatusWsResponse);
 
     // No exception
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
@@ -333,15 +343,18 @@ public final class QualityGateBreakerTest {
     WsClient wsClient = mock(WsClient.class);
     QualityGatesService qualityGatesService = mock(QualityGatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.ERROR).build();
-    ProjectStatusWsResponse projectStatusWsResponse = ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusWsResponse projectStatusWsResponse =
+        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
 
     when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class))).thenReturn(projectStatusWsResponse);
+    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+        .thenReturn(projectStatusWsResponse);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Project does not pass the quality gate.");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
@@ -355,24 +368,62 @@ public final class QualityGateBreakerTest {
     WsClient wsClient = mock(WsClient.class);
     QualityGatesService qualityGatesService = mock(QualityGatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.OK).build();
-    ProjectStatusWsResponse projectStatusWsResponse = ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusWsResponse projectStatusWsResponse =
+        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
 
     when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class))).thenReturn(projectStatusWsResponse);
+    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+        .thenReturn(projectStatusWsResponse);
 
     // No exception
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(analysisMode, fileSystem, settings)
+        .checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
   public void testLogConditions() {
     List<Condition> conditions = Lists.newArrayList();
-    conditions.add(Condition.newBuilder().setStatus(Status.WARN).setMetricKey("violations").setActualValue("20").setComparator(Comparator.GT).setWarningThreshold("10").build());
-    conditions.add(Condition.newBuilder().setStatus(Status.WARN).setMetricKey("uncovered_lines").setActualValue("20").setComparator(Comparator.NE).setWarningThreshold("0").build());
-    conditions.add(Condition.newBuilder().setStatus(Status.ERROR).setMetricKey("comment_lines").setActualValue("0").setComparator(Comparator.EQ).setErrorThreshold("0").build());
-    conditions.add(Condition.newBuilder().setStatus(Status.ERROR).setMetricKey("custom_metric").setActualValue("0").setComparator(Comparator.LT).setErrorThreshold("10").build());
-    conditions.add(Condition.newBuilder().setStatus(Status.OK).setMetricKey("blocker_violations").setActualValue("0").setComparator(Comparator.LT).setErrorThreshold("1").build());
+    conditions.add(
+        Condition.newBuilder()
+            .setStatus(Status.WARN)
+            .setMetricKey("violations")
+            .setActualValue("20")
+            .setComparator(Comparator.GT)
+            .setWarningThreshold("10")
+            .build());
+    conditions.add(
+        Condition.newBuilder()
+            .setStatus(Status.WARN)
+            .setMetricKey("uncovered_lines")
+            .setActualValue("20")
+            .setComparator(Comparator.NE)
+            .setWarningThreshold("0")
+            .build());
+    conditions.add(
+        Condition.newBuilder()
+            .setStatus(Status.ERROR)
+            .setMetricKey("comment_lines")
+            .setActualValue("0")
+            .setComparator(Comparator.EQ)
+            .setErrorThreshold("0")
+            .build());
+    conditions.add(
+        Condition.newBuilder()
+            .setStatus(Status.ERROR)
+            .setMetricKey("custom_metric")
+            .setActualValue("0")
+            .setComparator(Comparator.LT)
+            .setErrorThreshold("10")
+            .build());
+    conditions.add(
+        Condition.newBuilder()
+            .setStatus(Status.OK)
+            .setMetricKey("blocker_violations")
+            .setActualValue("0")
+            .setComparator(Comparator.LT)
+            .setErrorThreshold("1")
+            .build());
 
     int errors = QualityGateBreaker.logConditions(conditions);
     assertEquals(2, errors);

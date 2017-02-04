@@ -22,6 +22,12 @@ package org.sonar.plugins.buildbreaker;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Properties;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.PostJob;
@@ -49,16 +55,9 @@ import org.sonarqube.ws.client.WsRequest;
 import org.sonarqube.ws.client.WsResponse;
 import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-
 /**
- * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks the project's quality
- * gate.  Breaks the build if the quality gate has failed.
+ * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks
+ * the project's quality gate. Breaks the build if the quality gate has failed.
  */
 public final class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
@@ -84,7 +83,11 @@ public final class QualityGateBreaker implements PostJob {
   @Override
   public void executeOn(Project project, SensorContext context) {
     if (!analysisMode.isPublish()) {
-      LOGGER.debug("{} is disabled ({} != {})", CLASSNAME, CoreProperties.ANALYSIS_MODE, CoreProperties.ANALYSIS_MODE_PUBLISH);
+      LOGGER.debug(
+          "{} is disabled ({} != {})",
+          CLASSNAME,
+          CoreProperties.ANALYSIS_MODE,
+          CoreProperties.ANALYSIS_MODE_PUBLISH);
       return;
     }
 
@@ -99,10 +102,13 @@ public final class QualityGateBreaker implements PostJob {
   private void execute() {
     Properties reportTaskProps = loadReportTaskProps();
 
-    HttpConnector httpConnector = new HttpConnector.Builder()
-        .url(getServerUrl(reportTaskProps))
-        .credentials(settings.getString(CoreProperties.LOGIN), settings.getString(CoreProperties.PASSWORD))
-        .build();
+    HttpConnector httpConnector =
+        new HttpConnector.Builder()
+            .url(getServerUrl(reportTaskProps))
+            .credentials(
+                settings.getString(CoreProperties.LOGIN),
+                settings.getString(CoreProperties.PASSWORD))
+            .build();
 
     WsClient wsClient = new HttpWsClient(httpConnector);
 
@@ -116,7 +122,9 @@ public final class QualityGateBreaker implements PostJob {
     if (Strings.isNullOrEmpty(altServerUrl)) {
       return reportTaskProps.getProperty("serverUrl");
     } else {
-      LOGGER.debug("Using alternative server URL ({}): {}", BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY,
+      LOGGER.debug(
+          "Using alternative server URL ({}): {}",
+          BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY,
           altServerUrl);
       return altServerUrl;
     }
@@ -138,7 +146,8 @@ public final class QualityGateBreaker implements PostJob {
 
   @VisibleForTesting
   String getAnalysisId(WsClient wsClient, String ceTaskId) {
-    WsRequest ceTaskRequest = new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
+    WsRequest ceTaskRequest =
+        new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
 
     int queryMaxAttempts = settings.getInt(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY);
     int queryInterval = settings.getInt(BuildBreakerPlugin.QUERY_INTERVAL_KEY);
@@ -161,27 +170,32 @@ public final class QualityGateBreaker implements PostJob {
             // Exit
             return taskResponse.getTask().getAnalysisId();
           default:
-            throw new IllegalStateException("Report processing did not complete successfully: " + taskStatus);
+            throw new IllegalStateException(
+                "Report processing did not complete successfully: " + taskStatus);
         }
       } catch (IOException | InterruptedException e) {
         throw new IllegalStateException(e.getMessage(), e);
       }
     }
 
-    LOGGER.error("{} API query limit ({}) reached.  Try increasing {}, {}, or both.",
+    LOGGER.error(
+        "{} API query limit ({}) reached.  Try increasing {}, {}, or both.",
         BuildBreakerPlugin.LOG_STAMP,
         queryMaxAttempts,
         BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY,
         BuildBreakerPlugin.QUERY_INTERVAL_KEY);
 
-    throw new IllegalStateException("Report processing is taking longer than the configured wait limit.");
+    throw new IllegalStateException(
+        "Report processing is taking longer than the configured wait limit.");
   }
 
   @VisibleForTesting
   void checkQualityGate(WsClient wsClient, String analysisId) {
     LOGGER.debug("Requesting quality gate status for analysisId {}", analysisId);
-    ProjectStatusWsResponse projectStatusResponse = wsClient.qualityGates().projectStatus(
-        new ProjectStatusWsRequest().setAnalysisId(analysisId));
+    ProjectStatusWsResponse projectStatusResponse =
+        wsClient
+            .qualityGates()
+            .projectStatus(new ProjectStatusWsRequest().setAnalysisId(analysisId));
 
     ProjectStatus projectStatus = projectStatusResponse.getProjectStatus();
 
@@ -205,14 +219,16 @@ public final class QualityGateBreaker implements PostJob {
 
     for (Condition condition : conditionsList) {
       if (Status.WARN.equals(condition.getStatus())) {
-        LOGGER.warn("{}: {} {} {}",
+        LOGGER.warn(
+            "{}: {} {} {}",
             getMetricName(condition.getMetricKey()),
             condition.getActualValue(),
             getComparatorSymbol(condition.getComparator()),
             condition.getWarningThreshold());
       } else if (Status.ERROR.equals(condition.getStatus())) {
         errors++;
-        LOGGER.error("{}: {} {} {}",
+        LOGGER.error(
+            "{}: {} {} {}",
             getMetricName(condition.getMetricKey()),
             condition.getActualValue(),
             getComparatorSymbol(condition.getComparator()),

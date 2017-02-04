@@ -20,6 +20,7 @@
 package org.sonar.plugins.buildbreaker;
 
 import com.google.common.base.Splitter;
+import java.util.List;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
@@ -27,11 +28,9 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-import java.util.List;
-
 /**
- * Checks the analysis parameters for forbidden configurations.  Breaks the build if at least one of the
- * comma-separated key=value configurations was found.
+ * Checks the analysis parameters for forbidden configurations. Breaks the build if at least one of
+ * the comma-separated key=value configurations was found.
  */
 public final class ForbiddenConfigurationBreaker implements PostJob {
 
@@ -60,7 +59,8 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
       String value = split.size() > 1 ? split.get(1) : "";
       if (value.equals(settings.getString(key))) {
         LOG.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
-        throw new IllegalStateException("A forbidden configuration has been found on the project: " + pair);
+        throw new IllegalStateException(
+            "A forbidden configuration has been found on the project: " + pair);
       }
     }
   }

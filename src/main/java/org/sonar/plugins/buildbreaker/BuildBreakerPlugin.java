@@ -19,18 +19,15 @@
  */
 package org.sonar.plugins.buildbreaker;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.rule.Severity;
 
-import java.util.Arrays;
-import java.util.List;
-
-/**
- * Registers the plugin with SonarQube and defines the available configuration properties.
- */
+/** Registers the plugin with SonarQube and defines the available configuration properties. */
 public final class BuildBreakerPlugin extends SonarPlugin {
 
   static final String LOG_STAMP = "[BUILD BREAKER]";
@@ -42,7 +39,8 @@ public final class BuildBreakerPlugin extends SonarPlugin {
   static final String QUERY_INTERVAL_KEY = "sonar.buildbreaker.queryInterval";
 
   private static final String TOTAL_WAIT_TIME_DESCRIPTION =
-      String.format("Total wait time is <code>%s * %s</code>.",
+      String.format(
+          "Total wait time is <code>%s * %s</code>.",
           BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, BuildBreakerPlugin.QUERY_INTERVAL_KEY);
 
   static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
@@ -61,49 +59,58 @@ public final class BuildBreakerPlugin extends SonarPlugin {
         QualityGateBreaker.class,
         PropertyDefinition.builder(SKIP_KEY)
             .name("Skip quality gate check")
-            .description("If set to true, the quality gate is not checked.  By default the build "
-                + "will break if the project does not pass the quality gate.")
+            .description(
+                "If set to true, the quality gate is not checked.  By default the build will break "
+                    + "if the project does not pass the quality gate.")
             .onQualifiers(Qualifiers.PROJECT)
             .type(PropertyType.BOOLEAN)
             .defaultValue("false")
             .build(),
         PropertyDefinition.builder(QUERY_MAX_ATTEMPTS_KEY)
             .name("API query max attempts")
-            .description("The maximum number of queries to the API when waiting for report "
-                + "processing.  The build will break if this is reached.<br/>"
-                + TOTAL_WAIT_TIME_DESCRIPTION)
+            .description(
+                "The maximum number of queries to the API when waiting for report processing.  The "
+                    + "build will break if this is reached.<br/>"
+                    + TOTAL_WAIT_TIME_DESCRIPTION)
             .onQualifiers(Qualifiers.PROJECT)
             .type(PropertyType.INTEGER)
             .defaultValue("30")
             .build(),
         PropertyDefinition.builder(QUERY_INTERVAL_KEY)
             .name("API query interval (ms)")
-            .description("The interval between queries to the API when waiting for report "
-                + "processing.<br/>" + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION)
+            .description(
+                "The interval between queries to the API when waiting for report processing.<br/>"
+                    + BuildBreakerPlugin.TOTAL_WAIT_TIME_DESCRIPTION)
             .onQualifiers(Qualifiers.PROJECT)
             .type(PropertyType.INTEGER)
             .defaultValue("10000")
             .build(),
         PropertyDefinition.builder(FORBIDDEN_CONF_KEY)
             .name("Forbidden configuration parameters")
-            .description("Comma-separated list of <code>key=value</code> pairs that should break "
-                + "the build.")
+            .description(
+                "Comma-separated list of <code>key=value</code> pairs that should break the build.")
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(ALTERNATIVE_SERVER_URL_KEY)
             .name("Alternative server URL")
-            .description("URL to use for web service requests. If unset, uses the "
-                + "<code>serverUrl</code> property from "
-                + "<code>${sonar.working.directory}/report-task.txt</code>.")
+            .description(
+                "URL to use for web service requests. If unset, uses the <code>serverUrl</code> "
+                    + "property from <code>${sonar.working.directory}/report-task.txt</code>.")
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(ISSUES_SEVERITY_KEY)
             .name("Issues severity failure level (preview analysis)")
-            .description("Fails the build in preview analysis mode if the severity of issues is "
-                + "equal or more severe than the selection.")
+            .description(
+                "Fails the build in preview analysis mode if the severity of issues is equal to or "
+                    + "more severe than the selection.")
             .onQualifiers(Qualifiers.PROJECT)
             .type(PropertyType.SINGLE_SELECT_LIST)
-            .options(DISABLED, Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL,
+            .options(
+                DISABLED,
+                Severity.INFO,
+                Severity.MINOR,
+                Severity.MAJOR,
+                Severity.CRITICAL,
                 Severity.BLOCKER)
             .defaultValue(DISABLED)
             .build());

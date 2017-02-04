@@ -44,8 +44,9 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
   private final Settings settings;
 
   private String failureMessage = null;
-  
-  public IssuesSeverityBreaker(AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
+
+  public IssuesSeverityBreaker(
+      AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
     this.analysisMode = analysisMode;
     this.projectIssues = projectIssues;
     this.settings = settings;
@@ -54,28 +55,38 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
   @Override
   public void executeOn(Project project, SensorContext context) {
     if (analysisMode.isPublish()) {
-      LOG.debug("{} is disabled ({} == {})",
-          CLASSNAME, CoreProperties.ANALYSIS_MODE, CoreProperties.ANALYSIS_MODE_PUBLISH);
+      LOG.debug(
+          "{} is disabled ({} == {})",
+          CLASSNAME,
+          CoreProperties.ANALYSIS_MODE,
+          CoreProperties.ANALYSIS_MODE_PUBLISH);
       return;
     }
 
     String issuesSeveritySetting = settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
     if (Strings.isNullOrEmpty(issuesSeveritySetting)) {
-      LOG.debug("{} is disabled ({} is not set)", CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
+      LOG.debug(
+          "{} is disabled ({} is not set)", CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
       return;
     }
 
     issuesSeveritySetting = issuesSeveritySetting.toUpperCase(Locale.US);
     if (issuesSeveritySetting.equals(BuildBreakerPlugin.DISABLED.toUpperCase(Locale.US))) {
-      LOG.debug("{} is disabled ({} == {})",
-          CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY, BuildBreakerPlugin.DISABLED);
+      LOG.debug(
+          "{} is disabled ({} == {})",
+          CLASSNAME,
+          BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
+          BuildBreakerPlugin.DISABLED);
       return;
     }
 
     int issuesSeveritySettingAsInt = Severity.ALL.indexOf(issuesSeveritySetting);
     if (issuesSeveritySettingAsInt < 0) {
-      LOG.debug("{} is disabled ({} is unknown value '{}')",
-          CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY, issuesSeveritySetting);
+      LOG.debug(
+          "{} is disabled ({} is unknown value '{}')",
+          CLASSNAME,
+          BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
+          issuesSeveritySetting);
       return;
     }
 
@@ -83,8 +94,7 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
     for (Issue issue : projectIssues.issues()) {
       int issueSeverityAsInt = Severity.ALL.indexOf(issue.severity());
       if (issueSeverityAsInt >= issuesSeveritySettingAsInt) {
-        LOG.debug("Recording issue {} that has a severity of '{}'",
-            issue.key(), issue.severity());
+        LOG.debug("Recording issue {} that has a severity of '{}'", issue.key(), issue.severity());
         issueCountToFailFor++;
       }
     }
@@ -92,9 +102,12 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
     if (issueCountToFailFor > 0) {
       // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
       // plugins can finish their work, most notably the stash issue reporter plugin
-      failureMessage = "Found " + issueCountToFailFor
-          + " issues that are of severity equal or higher than " + issuesSeveritySetting;
-      
+      failureMessage =
+          "Found "
+              + issueCountToFailFor
+              + " issues that are of severity equal or higher than "
+              + issuesSeveritySetting;
+
     } else {
       LOG.info("No issues with severity equal or higher than {}", issuesSeveritySetting);
     }
