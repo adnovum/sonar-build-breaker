@@ -75,3 +75,24 @@ Gallio skipped will be marked "broken".
 | `sonar.buildbreaker.queryInterval` | The interval (ms) between queries to the API when waiting for report processing.  Total wait time is `sonar.buildbreaker.queryMaxAttempts * sonar.buildbreaker.queryInterval`. | `10000` | |
 | `sonar.buildbreaker.forbiddenConf` | Comma-separated list of `key=value` pairs that should break the build. | | `sonar.gallio.mode=skip` |
 | `sonar.buildbreaker.alternativeServerUrl` | URL to use for web service requests. If unset, uses the `serverUrl` property from `${sonar.working.directory}/report-task.txt`. | | |
+
+## Contributing
+
+When reporting issues, please include complete steps to reproduce the issue and all relevant logs.
+
+Pull requests are welcome, but may not always be reviewed immediately.  Please be patient while
+waiting for review.  This project is maintained on a best-effort basis (aka during spare time).
+
+### Pull Request Guidelines
+
+1. This project uses [google-java-format](https://github.com/google/google-java-format), so please
+   ensure all Java code is formatted with this tool
+2. For the most part, the project follows standard Oracle Java code conventions
+3. Include unit tests
+   1. Do not use PowerMock unless there is no alternative
+   2. Keep project coverage above 90%
+4. Update the documentation (this `README.md`) with new configuration parameters and usage notes
+5. Make sure your change works with all versions of SonarQube starting at the minimum version
+   defined in `pom.xml`
+   1. If you need to upgrade the base SonarQube version, create an issue for discussion first
+   2. Once upgraded, the base version will not be downgraded
