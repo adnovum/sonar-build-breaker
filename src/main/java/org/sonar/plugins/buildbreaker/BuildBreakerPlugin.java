@@ -66,13 +66,12 @@ import java.util.List;
       "<code>${sonar.working.directory}/report-task.txt</code>.",
     global = true,
     project = false),
-  @Property(key = BuildBreakerPlugin.FAIL_FOR_ISSUES_WITH_SEVERITY_KEY,
-    name = "Severity to fail preview analysis",
-    description = "Fails the build for preview analysis modes if the severity of issues is equal or more severe",
+  @Property(key = BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
+    name = "Issues severity failure level (preview analysis)",
+    description = "Fails the build in preview analysis mode if the severity of issues is equal or more severe than the selection.",
     type = PropertyType.SINGLE_SELECT_LIST,
-    options = {BuildBreakerPlugin.FAIL_FOR_ISSUES_DISABLED, 
-        Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL, Severity.BLOCKER},
-    defaultValue = Severity.MAJOR,
+    options = {BuildBreakerPlugin.DISABLED, Severity.INFO, Severity.MINOR, Severity.MAJOR, Severity.CRITICAL, Severity.BLOCKER},
+    defaultValue = BuildBreakerPlugin.DISABLED,
     global = true,
     project = true)
 })
@@ -93,8 +92,9 @@ public class BuildBreakerPlugin extends SonarPlugin {
 
   public static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
-  public static final String FAIL_FOR_ISSUES_WITH_SEVERITY_KEY = "sonar.buildbreaker.preview.failForIssuesWithSeverity";
-  public static final String FAIL_FOR_ISSUES_DISABLED = "DISABLED";
+  public static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
+
+  public static final String DISABLED = "Disabled";
 
   @Override
   public List getExtensions() {
