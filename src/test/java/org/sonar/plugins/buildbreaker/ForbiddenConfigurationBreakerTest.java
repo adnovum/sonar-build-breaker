@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.config.Settings;
 
-public class ForbiddenConfigurationBreakerTest {
+public final class ForbiddenConfigurationBreakerTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();

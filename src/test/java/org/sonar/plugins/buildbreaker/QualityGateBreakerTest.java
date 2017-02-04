@@ -60,7 +60,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TaskResponse.class)
-public class QualityGateBreakerTest {
+public final class QualityGateBreakerTest {
   private static final String TEST_TASK_ID = "Abc123";
   private static final String TEST_ANALYSIS_ID = "Def456";
 

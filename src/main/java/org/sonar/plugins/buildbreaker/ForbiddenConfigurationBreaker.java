@@ -33,7 +33,7 @@ import java.util.List;
  * Checks the analysis parameters for forbidden configurations.  Breaks the build if at least one of the
  * comma-separated key=value configurations was found.
  */
-public class ForbiddenConfigurationBreaker implements PostJob {
+public final class ForbiddenConfigurationBreaker implements PostJob {
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 

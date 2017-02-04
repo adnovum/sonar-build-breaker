@@ -34,7 +34,7 @@ import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-public class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
+public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
   private static final String CLASSNAME = IssuesSeverityBreaker.class.getSimpleName();
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);

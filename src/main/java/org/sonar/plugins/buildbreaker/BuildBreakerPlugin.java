@@ -75,26 +75,26 @@ import java.util.List;
     global = true,
     project = true)
 })
-public class BuildBreakerPlugin extends SonarPlugin {
+public final class BuildBreakerPlugin extends SonarPlugin {
 
-  public static final String SKIP_KEY = "sonar.buildbreaker.skip";
+  static final String SKIP_KEY = "sonar.buildbreaker.skip";
 
-  public static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
+  static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
 
-  public static final String QUERY_INTERVAL_KEY = "sonar.buildbreaker.queryInterval";
+  static final String QUERY_INTERVAL_KEY = "sonar.buildbreaker.queryInterval";
 
-  public static final String TOTAL_WAIT_TIME_DESCRIPTION = "Total wait time is <code>" +
+  static final String TOTAL_WAIT_TIME_DESCRIPTION = "Total wait time is <code>" +
       BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY + " * " + BuildBreakerPlugin.QUERY_INTERVAL_KEY + "</code>.";
 
-  public static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
+  static final String BUILD_BREAKER_LOG_STAMP = "[BUILD BREAKER] ";
 
-  public static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
+  static final String FORBIDDEN_CONF_KEY = "sonar.buildbreaker.forbiddenConf";
 
-  public static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
+  static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
-  public static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
+  static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
 
-  public static final String DISABLED = "Disabled";
+  static final String DISABLED = "Disabled";
 
   @Override
   public List getExtensions() {

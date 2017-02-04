@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class BuildBreakerPluginTest {
+public final class BuildBreakerPluginTest {
 
   @Test
   public void testDeclaredExtensions() {

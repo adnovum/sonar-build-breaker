@@ -60,7 +60,7 @@ import java.util.Properties;
  * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks the project's quality
  * gate.  Breaks the build if the quality gate has failed.
  */
-public class QualityGateBreaker implements PostJob {
+public final class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
