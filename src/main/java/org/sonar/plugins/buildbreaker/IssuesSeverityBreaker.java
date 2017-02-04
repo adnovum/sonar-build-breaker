@@ -39,22 +39,16 @@ public class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
-  private final ProjectIssues projectIssues;
   private final AnalysisMode analysisMode;
+  private final ProjectIssues projectIssues;
+  private final Settings settings;
 
-  private String issuesSeveritySetting;
-  private int issuesSeveritySettingAsInt;
   private String failureMessage = null;
   
   public IssuesSeverityBreaker(AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
     this.analysisMode = analysisMode;
     this.projectIssues = projectIssues;
-    
-    issuesSeveritySetting = settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
-    if (!Strings.isNullOrEmpty(issuesSeveritySetting)) {
-      issuesSeveritySetting = issuesSeveritySetting.toUpperCase(Locale.US);
-      issuesSeveritySettingAsInt = Severity.ALL.indexOf(issuesSeveritySetting);
-    }
+    this.settings = settings;
   }
 
   @Override
@@ -65,8 +59,23 @@ public class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
       return;
     }
 
+    String issuesSeveritySetting = settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
+    if (Strings.isNullOrEmpty(issuesSeveritySetting)) {
+      LOG.debug("{} is disabled ({} is not set)", CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
+      return;
+    }
+
+    issuesSeveritySetting = issuesSeveritySetting.toUpperCase(Locale.US);
+    if (issuesSeveritySetting.equals(BuildBreakerPlugin.DISABLED.toUpperCase(Locale.US))) {
+      LOG.debug("{} is disabled ({} == {})",
+          CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY, BuildBreakerPlugin.DISABLED);
+      return;
+    }
+
+    int issuesSeveritySettingAsInt = Severity.ALL.indexOf(issuesSeveritySetting);
     if (issuesSeveritySettingAsInt < 0) {
-      LOG.debug("issuesSeveritySetting is configured to {}", issuesSeveritySetting);
+      LOG.debug("{} is disabled ({} is unknown value '{}')",
+          CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY, issuesSeveritySetting);
       return;
     }
 
