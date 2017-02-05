@@ -21,6 +21,7 @@ package org.sonar.plugins.buildbreaker;
 
 import com.google.common.base.Splitter;
 import java.util.List;
+import org.sonar.api.batch.CheckProject;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.config.Settings;
@@ -32,7 +33,7 @@ import org.sonar.api.utils.log.Loggers;
  * Checks the analysis parameters for forbidden configurations. Breaks the build if at least one of
  * the comma-separated key=value configurations was found.
  */
-public final class ForbiddenConfigurationBreaker implements PostJob {
+public final class ForbiddenConfigurationBreaker implements CheckProject, PostJob {
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
@@ -45,6 +46,11 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
    */
   public ForbiddenConfigurationBreaker(Settings settings) {
     this.settings = settings;
+  }
+
+  @Override
+  public boolean shouldExecuteOnProject(Project project) {
+    return settings.hasKey(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
   }
 
   @Override

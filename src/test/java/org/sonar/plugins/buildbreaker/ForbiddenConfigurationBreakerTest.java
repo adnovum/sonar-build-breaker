@@ -19,6 +19,8 @@
  */
 package org.sonar.plugins.buildbreaker;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -29,9 +31,23 @@ public final class ForbiddenConfigurationBreakerTest {
   @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Test
+  public void testShouldExecuteSuccess() {
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+
+    assertEquals(true, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject(null));
+  }
+
+  @Test
+  public void testShouldExecuteFailure() {
+    Settings settings = new Settings();
+
+    assertEquals(false, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject(null));
+  }
+
+  @Test
   public void shouldNotFailWithoutAnyForbiddenConfSet() {
-    ForbiddenConfigurationBreaker checker = new ForbiddenConfigurationBreaker(new Settings());
-    checker.executeOn(null, null);
+    new ForbiddenConfigurationBreaker(new Settings()).executeOn(null, null);
     // no exception expected
   }
 

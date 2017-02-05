@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
+import org.sonar.api.batch.CheckProject;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
@@ -59,7 +60,7 @@ import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
  * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks
  * the project's quality gate. Breaks the build if the quality gate has failed.
  */
-public final class QualityGateBreaker implements PostJob {
+public final class QualityGateBreaker implements CheckProject, PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
@@ -81,25 +82,24 @@ public final class QualityGateBreaker implements PostJob {
   }
 
   @Override
-  public void executeOn(Project project, SensorContext context) {
+  public boolean shouldExecuteOnProject(Project project) {
     if (!analysisMode.isPublish()) {
       LOGGER.debug(
           "{} is disabled ({} != {})",
           CLASSNAME,
           CoreProperties.ANALYSIS_MODE,
           CoreProperties.ANALYSIS_MODE_PUBLISH);
-      return;
+      return false;
     }
-
     if (settings.getBoolean(BuildBreakerPlugin.SKIP_KEY)) {
       LOGGER.debug("{} is disabled ({} = true)", CLASSNAME, BuildBreakerPlugin.SKIP_KEY);
-      return;
+      return false;
     }
-
-    execute();
+    return true;
   }
 
-  private void execute() {
+  @Override
+  public void executeOn(Project project, SensorContext context) {
     Properties reportTaskProps = loadReportTaskProps();
 
     HttpConnector httpConnector =

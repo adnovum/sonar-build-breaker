@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import java.util.Locale;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
+import org.sonar.api.batch.CheckProject;
 import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.events.PostJobsPhaseHandler;
@@ -34,14 +35,15 @@ import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
-public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandler {
+public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJobsPhaseHandler {
   private static final String CLASSNAME = IssuesSeverityBreaker.class.getSimpleName();
 
   private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
 
   private final AnalysisMode analysisMode;
   private final ProjectIssues projectIssues;
-  private final Settings settings;
+  private final String issuesSeveritySetting;
+  private final int issuesSeveritySettingValue;
 
   private String failureMessage = null;
 
@@ -49,51 +51,38 @@ public final class IssuesSeverityBreaker implements PostJob, PostJobsPhaseHandle
       AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
     this.analysisMode = analysisMode;
     this.projectIssues = projectIssues;
-    this.settings = settings;
+    issuesSeveritySetting =
+        Strings.nullToEmpty(settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY))
+            .toUpperCase(Locale.US);
+    issuesSeveritySettingValue = Severity.ALL.indexOf(issuesSeveritySetting);
   }
 
   @Override
-  public void executeOn(Project project, SensorContext context) {
+  public boolean shouldExecuteOnProject(Project project) {
     if (analysisMode.isPublish()) {
       LOG.debug(
           "{} is disabled ({} == {})",
           CLASSNAME,
           CoreProperties.ANALYSIS_MODE,
           CoreProperties.ANALYSIS_MODE_PUBLISH);
-      return;
+      return false;
     }
-
-    String issuesSeveritySetting = settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
-    if (Strings.isNullOrEmpty(issuesSeveritySetting)) {
-      LOG.debug(
-          "{} is disabled ({} is not set)", CLASSNAME, BuildBreakerPlugin.ISSUES_SEVERITY_KEY);
-      return;
-    }
-
-    issuesSeveritySetting = issuesSeveritySetting.toUpperCase(Locale.US);
-    if (issuesSeveritySetting.equals(BuildBreakerPlugin.DISABLED.toUpperCase(Locale.US))) {
+    if (issuesSeveritySettingValue < 0) {
       LOG.debug(
           "{} is disabled ({} == {})",
           CLASSNAME,
           BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
-          BuildBreakerPlugin.DISABLED);
-      return;
-    }
-
-    int issuesSeveritySettingAsInt = Severity.ALL.indexOf(issuesSeveritySetting);
-    if (issuesSeveritySettingAsInt < 0) {
-      LOG.debug(
-          "{} is disabled ({} is unknown value '{}')",
-          CLASSNAME,
-          BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
           issuesSeveritySetting);
-      return;
+      return false;
     }
+    return true;
+  }
 
+  @Override
+  public void executeOn(Project project, SensorContext context) {
     int issueCountToFailFor = 0;
     for (Issue issue : projectIssues.issues()) {
-      int issueSeverityAsInt = Severity.ALL.indexOf(issue.severity());
-      if (issueSeverityAsInt >= issuesSeveritySettingAsInt) {
+      if (Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
         LOG.debug("Recording issue {} that has a severity of '{}'", issue.key(), issue.severity());
         issueCountToFailFor++;
       }
