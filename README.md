@@ -6,14 +6,11 @@
 
 | SonarQube Version | Plugin Version(s) |
 |-------------------|-------------------|
-| 4.5 (LTS)         | 1.1 |
-| 5.0               | 1.1 |
-| 5.1               | 1.1 |
-| 5.2               | Not compatibile due to limitations with SonarQube platform |
-| 5.3               | 2.0, 2.1 |
-| 5.4               | 2.0, 2.1 |
-| 5.5               | 2.1 |
-| 5.6 (LTS)         | 2.1 |
+| 1.12 - 2.14       | 1.0 |
+| 3.0 - 5.1         | 1.0, 1.1 |
+| 5.2               | Not compatible due to limitations with SonarQube platform |
+| 5.3 - 5.4         | 2.0, 2.1 |
+| 5.5 - 6.2         | 2.1 |
 
 ## Download and Installation
 
