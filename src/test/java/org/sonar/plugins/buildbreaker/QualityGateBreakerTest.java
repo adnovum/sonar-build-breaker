@@ -38,10 +38,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sonar.api.batch.AnalysisMode;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonarqube.ws.WsCe.Task;
 import org.sonarqube.ws.WsCe.TaskResponse;
 import org.sonarqube.ws.WsCe.TaskStatus;
@@ -118,14 +116,11 @@ public final class QualityGateBreakerTest {
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new Settings();
 
-    Project project = mock(Project.class);
-    SensorContext sensorContext = mock(SensorContext.class);
-
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
     thrown.expectMessage("Unable to load properties from file");
 
-    new QualityGateBreaker(null, fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(null, fileSystem, settings).executeOn(null, null);
   }
 
   /**
@@ -140,13 +135,10 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new Settings();
 
-    Project project = mock(Project.class);
-    SensorContext sensorContext = mock(SensorContext.class);
-
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(null, fileSystem, settings).executeOn(project, sensorContext);
+    new QualityGateBreaker(null, fileSystem, settings).executeOn(null, null);
   }
 
   @Test
