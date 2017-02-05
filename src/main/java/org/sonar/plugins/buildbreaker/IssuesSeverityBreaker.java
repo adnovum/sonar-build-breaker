@@ -35,6 +35,10 @@ import org.sonar.api.rule.Severity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+/**
+ * Checks the project's issues for the configured severity level or higher. Breaks the build if any
+ * issues at those severities are found.
+ */
 public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJobsPhaseHandler {
   private static final String CLASSNAME = IssuesSeverityBreaker.class.getSimpleName();
 
@@ -47,6 +51,13 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
 
   private String failureMessage = null;
 
+  /**
+   * Constructor used to inject dependencies.
+   *
+   * @param analysisMode the analysis mode
+   * @param projectIssues the project's issues
+   * @param settings the project settings
+   */
   public IssuesSeverityBreaker(
       AnalysisMode analysisMode, ProjectIssues projectIssues, Settings settings) {
     this.analysisMode = analysisMode;
