@@ -49,7 +49,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
   private final String issuesSeveritySetting;
   private final int issuesSeveritySettingValue;
 
-  private String failureMessage = null;
+  private boolean failed = false;
 
   /**
    * Constructor used to inject dependencies.
@@ -91,32 +91,21 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
 
   @Override
   public void executeOn(Project project, SensorContext context) {
-    int issueCountToFailFor = 0;
     for (Issue issue : projectIssues.issues()) {
       if (Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
-        LOGGER.debug(
-            "Recording issue {} that has a severity of '{}'", issue.key(), issue.severity());
-        issueCountToFailFor++;
+        // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
+        // plugins can finish their work, most notably the stash issue reporter plugin
+        failed = true;
+        return;
       }
-    }
-
-    if (issueCountToFailFor > 0) {
-      // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
-      // plugins can finish their work, most notably the stash issue reporter plugin
-      failureMessage =
-          "Found "
-              + issueCountToFailFor
-              + " issues that are of severity equal or higher than "
-              + issuesSeveritySetting;
-
-    } else {
-      LOGGER.info("No issues with severity equal or higher than {}", issuesSeveritySetting);
     }
   }
 
   @Override
   public void onPostJobsPhase(PostJobsPhaseEvent event) {
-    if (event.isEnd() && failureMessage != null) {
+    if (event.isEnd() && failed) {
+      String failureMessage =
+          "Project contains issues with severity equal to or higher than " + issuesSeveritySetting;
       LOGGER.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
       throw new IllegalStateException(failureMessage);
     }
