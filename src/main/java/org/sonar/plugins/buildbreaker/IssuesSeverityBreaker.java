@@ -42,7 +42,7 @@ import org.sonar.api.utils.log.Loggers;
 public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJobsPhaseHandler {
   private static final String CLASSNAME = IssuesSeverityBreaker.class.getSimpleName();
 
-  private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
+  private static final Logger LOGGER = Loggers.get(ForbiddenConfigurationBreaker.class);
 
   private final AnalysisMode analysisMode;
   private final ProjectIssues projectIssues;
@@ -71,7 +71,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
   @Override
   public boolean shouldExecuteOnProject(Project project) {
     if (analysisMode.isPublish()) {
-      LOG.debug(
+      LOGGER.debug(
           "{} is disabled ({} == {})",
           CLASSNAME,
           CoreProperties.ANALYSIS_MODE,
@@ -79,7 +79,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
       return false;
     }
     if (issuesSeveritySettingValue < 0) {
-      LOG.debug(
+      LOGGER.debug(
           "{} is disabled ({} == {})",
           CLASSNAME,
           BuildBreakerPlugin.ISSUES_SEVERITY_KEY,
@@ -94,7 +94,8 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     int issueCountToFailFor = 0;
     for (Issue issue : projectIssues.issues()) {
       if (Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
-        LOG.debug("Recording issue {} that has a severity of '{}'", issue.key(), issue.severity());
+        LOGGER.debug(
+            "Recording issue {} that has a severity of '{}'", issue.key(), issue.severity());
         issueCountToFailFor++;
       }
     }
@@ -109,14 +110,14 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
               + issuesSeveritySetting;
 
     } else {
-      LOG.info("No issues with severity equal or higher than {}", issuesSeveritySetting);
+      LOGGER.info("No issues with severity equal or higher than {}", issuesSeveritySetting);
     }
   }
 
   @Override
   public void onPostJobsPhase(PostJobsPhaseEvent event) {
     if (event.isEnd() && failureMessage != null) {
-      LOG.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
+      LOGGER.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
       throw new IllegalStateException(failureMessage);
     }
   }

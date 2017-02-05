@@ -35,7 +35,7 @@ import org.sonar.api.utils.log.Loggers;
  */
 public final class ForbiddenConfigurationBreaker implements CheckProject, PostJob {
 
-  private static final Logger LOG = Loggers.get(ForbiddenConfigurationBreaker.class);
+  private static final Logger LOGGER = Loggers.get(ForbiddenConfigurationBreaker.class);
 
   private final Settings settings;
 
@@ -64,7 +64,7 @@ public final class ForbiddenConfigurationBreaker implements CheckProject, PostJo
       String key = split.get(0);
       String value = split.size() > 1 ? split.get(1) : "";
       if (value.equals(settings.getString(key))) {
-        LOG.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
+        LOGGER.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
         throw new IllegalStateException(
             "A forbidden configuration has been found on the project: " + pair);
       }
