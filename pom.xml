@@ -61,6 +61,8 @@
     <sonar.version>5.3</sonar.version>
     <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
+    <!-- Last JDK 1.7 compatible packaging plugin version -->
+    <version.sonar-packaging.plugin>1.16</version.sonar-packaging.plugin>
   </properties>
 
   <dependencies>
