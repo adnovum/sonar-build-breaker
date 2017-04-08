@@ -1,6 +1,6 @@
 /*
  * SonarQube Build Breaker Plugin
- * Copyright (C) 2009-2017 Matthew DeTullio and contributors
+ * Copyright (C) 2009-2016 Matthew DeTullio and contributors
  * mailto:sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or

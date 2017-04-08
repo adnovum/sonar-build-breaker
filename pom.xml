@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sonarsource.parent</groupId>
     <artifactId>parent</artifactId>
-    <version>40</version>
+    <version>26</version>
   </parent>
 
   <groupId>org.sonarqubecommunity.buildbreaker</groupId>
@@ -55,7 +55,6 @@
   </ciManagement>
 
   <properties>
-    <jdk.min.version>1.7</jdk.min.version>
     <license.owner>${project.organization.name}</license.owner>
     <license.mailto>${project.organization.url}</license.mailto>
     <sonar.version>5.3</sonar.version>
