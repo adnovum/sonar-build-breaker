@@ -89,8 +89,51 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     return true;
   }
 
+  /**
+  * short version
+  * just for showing the idea
+  **/
+  private QualityGateBilanBean getQualityGateBean( SensorContext context ) {
+		
+    // do you agree the idea ?
+		String qgId = context.settings().getString("sonar.qualitygate");
+
+		String sonarHostUrl = context.settings().getString("sonar.host.url");
+
+		HttpConnector httpConnector = new HttpConnector.Builder().url(sonarHostUrl).credentials(this.LOGIN, this.PASSWORD)
+				.build();
+
+		WsRequest wsRequest = new GetRequest("api/qualitygates/show").setParam("id", qgId)
+				.setMediaType(MediaTypes.PROTOBUF);
+
+		WsResponse wsResponse = httpConnector.call(wsRequest);
+
+		String contentString = wsResponse.content();
+
+		Gson gson = new Gson();
+		QualityGateBilanBean gateBean = gson.fromJson(contentString, QualityGateBilanBean.class);
+    // ...
+    // some attributes to set here
+    // just modeling the json response into a bean
+    // ...
+    return gateBean;
+
+	}
+  
+  
   @Override
   public void executeOn(Project project, SensorContext context) {
+    
+    // I use this :
+    QualityGateBilanBean qualityGateBilanBean = getQualityGateBean(context);
+    
+    // then after I can write :
+    // nbblockerIssues is easy to get
+    if ( qualityGateBilanBean.getTreshlodBlocker() >  nbblockerIssues ) {
+      ...
+      // to mix with your next test
+    }
+        
     for (Issue issue : projectIssues.issues()) {
       if (Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
         // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
