@@ -157,6 +157,39 @@ public final class IssuesSeverityBreakerTest {
   }
 
   @Test
+  public void testIssueSilent() {
+    Issue issue1 = mock(Issue.class);
+    when(issue1.severity()).thenReturn(Severity.MINOR);
+    when(issue1.line()).thenReturn(-1);
+    when(issue1.componentKey()).thenReturn("/TestFile.java");
+    when(issue1.message()).thenReturn("A problem occured");
+    when(issue1.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
+    Issue issue2 = mock(Issue.class);
+    when(issue2.severity()).thenReturn(Severity.CRITICAL);
+    when(issue2.line()).thenReturn(-1);
+    when(issue2.componentKey()).thenReturn("/TestFile.java");
+    when(issue2.message()).thenReturn("A problem occured");
+    when(issue2.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
+
+    ProjectIssues projectIssues = mock(ProjectIssues.class);
+    when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
+
+    Settings settings = new Settings();
+    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+    settings.setProperty(BuildBreakerPlugin.ISSUES_SILENT_KEY, true);
+
+    IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(null, projectIssues, settings);
+    breaker.executeOn(null, null);
+
+    PostJobsPhaseEvent postJobsPhaseEvent = mock(PostJobsPhaseEvent.class);
+    when(postJobsPhaseEvent.isEnd()).thenReturn(true);
+
+  // No exception as swallowed and logged
+
+    breaker.onPostJobsPhase(postJobsPhaseEvent);
+  }
+
+  @Test
   public void testSeverityMajorFoundNone() {
     Issue issue1 = mock(Issue.class);
     when(issue1.severity()).thenReturn(Severity.INFO);

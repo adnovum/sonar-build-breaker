@@ -52,6 +52,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
 
   private boolean failed = false;
   private boolean failNewIssuesOnlySetting = true;
+  private boolean silent = false;
 
   /**
    * Constructor used to inject dependencies.
@@ -69,6 +70,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
             .toUpperCase(Locale.US);
     issuesSeveritySettingValue = Severity.ALL.indexOf(issuesSeveritySetting);
     failNewIssuesOnlySetting = settings.getBoolean(BuildBreakerPlugin.ISSUES_NEWONLY_KEY);
+    silent = settings.getBoolean(BuildBreakerPlugin.ISSUES_SILENT_KEY);
   }
 
   @Override
@@ -98,7 +100,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     for (Issue issue : projectIssues.issues()) {
       if (( issue.isNew() || !failNewIssuesOnlySetting) && Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
           Integer line = issue.line();
-          LOGGER.info("{}, Line {}, {} ({}) , {}",issue.componentKey(), line == null ? -1 : line.toString(),issue.message(), issue.ruleKey().toString(), issue.isNew()? "(New Issue)" : "");
+          LOGGER.warn("{}, Line {}, {} ({}) , {}",issue.componentKey(), line == null ? -1 : line.toString(),issue.message(), issue.ruleKey().toString(), issue.isNew()? "(New Issue)" : "");
           // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
           // plugins can finish their work, most notably the stash issue reporter plugin
           failed = true;
@@ -111,8 +113,13 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     if (event.isEnd() && failed) {
       String failureMessage =
           "Project contains issues with severity equal to or higher than " + issuesSeveritySetting;
-      LOGGER.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
-      throw new IllegalStateException(failureMessage);
+      if (silent) {
+        LOGGER.warn("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
+      } else {
+        LOGGER.error("{} {}", BuildBreakerPlugin.LOG_STAMP, failureMessage);
+        throw new IllegalStateException(failureMessage);
+      }
+
     }
   }
 }

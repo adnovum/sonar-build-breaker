@@ -48,7 +48,10 @@ public final class BuildBreakerPlugin extends SonarPlugin {
   static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
   static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
-  static final String ISSUES_NEWONLY_KEY = "sonar.builderbreaker.preview.newIssuesOnly";
+
+  static final String ISSUES_NEWONLY_KEY = "sonar.buildbreaker.preview.newIssuesOnly";
+
+  static final String ISSUES_SILENT_KEY = "sonar.buildbreaker.preview.silent";
 
   static final String DISABLED = "Disabled";
 
@@ -117,10 +120,17 @@ public final class BuildBreakerPlugin extends SonarPlugin {
             .build(),
         PropertyDefinition.builder(ISSUES_NEWONLY_KEY)
           .name("Fail New Issues Only (preview analysis)")
-          .description("Fails the build for new issues only")
+          .description("Fails the build in preview analysis for new issues only")
           .onQualifiers(Qualifiers.PROJECT)
           .type(PropertyType.BOOLEAN)
           .defaultValue("true")
+          .build(),
+        PropertyDefinition.builder(ISSUES_SILENT_KEY)
+          .name("Issues Silent Mode (preview analysis)")
+          .description("Will not fail the preview analysis build and only log issues that would cause the failure")
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.BOOLEAN)
+          .defaultValue("false")
           .build());
   }
 }

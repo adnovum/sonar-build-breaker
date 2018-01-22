@@ -27,6 +27,6 @@ public final class BuildBreakerPluginTest {
 
   @Test
   public void testDeclaredExtensions() {
-    assertEquals(10, new BuildBreakerPlugin().getExtensions().size());
+    assertEquals(11, new BuildBreakerPlugin().getExtensions().size());
   }
 }
