@@ -87,7 +87,8 @@ checkers.
 | `sonar.buildbreaker.forbiddenConf` | Comma-separated list of `key=value` pairs that should break the build. | | `sonar.gallio.mode=skip` |
 | `sonar.buildbreaker.alternativeServerUrl` | URL to use for web service requests. If unset, uses the `serverUrl` property from `${sonar.working.directory}/report-task.txt`. | | |
 | `sonar.buildbreaker.preview.issuesSeverity` | Fails the build in preview analysis mode if the severity of issues is equal to or more severe than the selection. | `Disabled` | Available selections are (case insensitive): `Disabled`, `INFO`, `MINOR`, `MAJOR`, `CRITICAL`, `BLOCKER` |
-| `sonar.buildbreaker.preview..newIssuesOnly` | Fails the build in preview analysis mode for new issues only | false | |
+| `sonar.buildbreaker.preview.newIssuesOnly` | Fails the build in preview analysis mode for new issues only | true | |
+| `sonar.buildbreaker.preview.silent` | Disable failing the build in preview analysis mode and only log the issues found | false | |
 
 ## Contributing
 
