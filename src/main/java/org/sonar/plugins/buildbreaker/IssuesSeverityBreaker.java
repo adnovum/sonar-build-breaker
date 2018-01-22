@@ -28,6 +28,7 @@ import org.sonar.api.batch.PostJob;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.events.PostJobsPhaseHandler;
 import org.sonar.api.config.Settings;
+import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.resources.Project;
@@ -50,6 +51,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
   private final int issuesSeveritySettingValue;
 
   private boolean failed = false;
+  private boolean failNewIssuesOnlySetting;
 
   /**
    * Constructor used to inject dependencies.
@@ -66,6 +68,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
         Strings.nullToEmpty(settings.getString(BuildBreakerPlugin.ISSUES_SEVERITY_KEY))
             .toUpperCase(Locale.US);
     issuesSeveritySettingValue = Severity.ALL.indexOf(issuesSeveritySetting);
+    failNewIssuesOnlySetting = settings.getBoolean(BuildBreakerPlugin.ISSUES_NEWONLY_KEY);
   }
 
   @Override
@@ -89,14 +92,16 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     return true;
   }
 
+
   @Override
   public void executeOn(Project project, SensorContext context) {
     for (Issue issue : projectIssues.issues()) {
-      if (Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
-        // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
-        // plugins can finish their work, most notably the stash issue reporter plugin
-        failed = true;
-        return;
+      if (( issue.isNew() || !failNewIssuesOnlySetting) && Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
+          Integer line = issue.line();
+          LOGGER.info("{}, {}, {} ({})",issue.componentKey(), line == null ? -1 : line.toString(),issue.message(), issue.ruleKey().toString());
+          // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
+          // plugins can finish their work, most notably the stash issue reporter plugin
+          failed = true;
       }
     }
   }

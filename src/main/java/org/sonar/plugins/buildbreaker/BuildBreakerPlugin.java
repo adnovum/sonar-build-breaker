@@ -48,6 +48,7 @@ public final class BuildBreakerPlugin extends SonarPlugin {
   static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
   static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
+  static final String ISSUES_NEWONLY_KEY = "sonar.builderbreaker.preview.newIssuesOnly";
 
   static final String DISABLED = "Disabled";
 
@@ -113,6 +114,13 @@ public final class BuildBreakerPlugin extends SonarPlugin {
                 Severity.CRITICAL,
                 Severity.BLOCKER)
             .defaultValue(DISABLED)
-            .build());
+            .build(),
+        PropertyDefinition.builder(ISSUES_NEWONLY_KEY)
+          .name("Fail New Issues Only (preview analysis)")
+          .description("Fails the build for new issues only")
+          .onQualifiers(Qualifiers.PROJECT)
+          .type(PropertyType.BOOLEAN)
+          .defaultValue("true")
+          .build());
   }
 }

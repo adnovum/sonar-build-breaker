@@ -32,6 +32,7 @@ import org.sonar.api.batch.events.PostJobsPhaseHandler.PostJobsPhaseEvent;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
 
 public final class IssuesSeverityBreakerTest {
@@ -93,8 +94,16 @@ public final class IssuesSeverityBreakerTest {
   public void testSeverityMajorFoundMajor() {
     Issue issue1 = mock(Issue.class);
     when(issue1.severity()).thenReturn(Severity.MINOR);
+    when(issue1.line()).thenReturn(-1);
+    when(issue1.componentKey()).thenReturn("/TestFile.java");
+    when(issue1.message()).thenReturn("A problem occured");
+    when(issue1.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
     Issue issue2 = mock(Issue.class);
     when(issue2.severity()).thenReturn(Severity.MAJOR);
+    when(issue2.line()).thenReturn(-1);
+    when(issue2.componentKey()).thenReturn("/TestFile.java");
+    when(issue2.message()).thenReturn("A problem occured");
+    when(issue2.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
 
     ProjectIssues projectIssues = mock(ProjectIssues.class);
     when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
@@ -118,8 +127,16 @@ public final class IssuesSeverityBreakerTest {
   public void testSeverityMajorFoundCritical() {
     Issue issue1 = mock(Issue.class);
     when(issue1.severity()).thenReturn(Severity.MINOR);
+    when(issue1.line()).thenReturn(-1);
+    when(issue1.componentKey()).thenReturn("/TestFile.java");
+    when(issue1.message()).thenReturn("A problem occured");
+    when(issue1.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
     Issue issue2 = mock(Issue.class);
     when(issue2.severity()).thenReturn(Severity.CRITICAL);
+    when(issue2.line()).thenReturn(-1);
+    when(issue2.componentKey()).thenReturn("/TestFile.java");
+    when(issue2.message()).thenReturn("A problem occured");
+    when(issue2.ruleKey()).thenReturn(RuleKey.of("Repo", "rule"));
 
     ProjectIssues projectIssues = mock(ProjectIssues.class);
     when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
