@@ -51,7 +51,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
   private final int issuesSeveritySettingValue;
 
   private boolean failed = false;
-  private boolean failNewIssuesOnlySetting;
+  private boolean failNewIssuesOnlySetting = true;
 
   /**
    * Constructor used to inject dependencies.
@@ -98,7 +98,7 @@ public final class IssuesSeverityBreaker implements CheckProject, PostJob, PostJ
     for (Issue issue : projectIssues.issues()) {
       if (( issue.isNew() || !failNewIssuesOnlySetting) && Severity.ALL.indexOf(issue.severity()) >= issuesSeveritySettingValue) {
           Integer line = issue.line();
-          LOGGER.info("{}, {}, {} ({})",issue.componentKey(), line == null ? -1 : line.toString(),issue.message(), issue.ruleKey().toString());
+          LOGGER.info("{}, Line {}, {} ({}) , {}",issue.componentKey(), line == null ? -1 : line.toString(),issue.message(), issue.ruleKey().toString(), issue.isNew()? "(New Issue)" : "");
           // only mark failure and fail on PostJobsPhaseHandler.onPostJobsPhase() to ensure other
           // plugins can finish their work, most notably the stash issue reporter plugin
           failed = true;
