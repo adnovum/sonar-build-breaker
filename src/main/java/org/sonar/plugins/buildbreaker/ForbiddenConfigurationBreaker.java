@@ -20,54 +20,62 @@
 package org.sonar.plugins.buildbreaker;
 
 import com.google.common.base.Splitter;
-import java.util.List;
-import org.sonar.api.batch.CheckProject;
-import org.sonar.api.batch.PostJob;
-import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.postjob.PostJob;
+import org.sonar.api.batch.postjob.PostJobContext;
+import org.sonar.api.batch.postjob.PostJobDescriptor;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+
+import java.util.List;
 
 /**
  * Checks the analysis parameters for forbidden configurations. Breaks the build if at least one of
  * the comma-separated key=value configurations was found.
  */
-public final class ForbiddenConfigurationBreaker implements CheckProject, PostJob {
+public final class ForbiddenConfigurationBreaker implements PostJob {
 
-  private static final Logger LOGGER = Loggers.get(ForbiddenConfigurationBreaker.class);
+    private static final Logger LOGGER = Loggers.get(ForbiddenConfigurationBreaker.class);
 
-  private final Settings settings;
+    private final Settings settings;
 
-  /**
-   * Constructor used to inject dependencies.
-   *
-   * @param settings the project settings
-   */
-  public ForbiddenConfigurationBreaker(Settings settings) {
-    this.settings = settings;
-  }
-
-  @Override
-  public boolean shouldExecuteOnProject(Project project) {
-    return settings.hasKey(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
-  }
-
-  @Override
-  public void executeOn(Project project, SensorContext context) {
-    String[] pairs = settings.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
-    for (String pair : pairs) {
-      List<String> split = Splitter.on('=').limit(2).splitToList(pair);
-      if (split.isEmpty()) {
-        continue;
-      }
-      String key = split.get(0);
-      String value = split.size() > 1 ? split.get(1) : "";
-      if (value.equals(settings.getString(key))) {
-        LOGGER.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
-        throw new IllegalStateException(
-            "A forbidden configuration has been found on the project: " + pair);
-      }
+    /**
+     * Constructor used to inject dependencies.
+     *
+     * @param settings the project settings
+     */
+    public ForbiddenConfigurationBreaker(Settings settings) {
+        this.settings = settings;
     }
-  }
+
+    boolean shouldExecuteOnProject() {
+        return settings.hasKey(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
+    }
+
+    @Override
+    public void describe(PostJobDescriptor descriptor) {
+        descriptor.name("Forbidden Configuration Breaker");
+    }
+
+    @Override
+    public void execute(PostJobContext context) {
+        if (shouldExecuteOnProject()) {
+            String[] pairs = settings.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
+
+            for (String pair : pairs) {
+                List<String> split = Splitter.on('=').limit(2).splitToList(pair);
+                if (split.isEmpty()) {
+                    continue;
+                }
+                String key = split.get(0);
+                String value = split.size() > 1 ? split.get(1) : "";
+                if (value.equals(settings.getString(key))) {
+                    LOGGER.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
+                    throw new IllegalStateException(
+                            "A forbidden configuration has been found on the project: " + pair);
+                }
+            }
+        }
+    }
+
 }

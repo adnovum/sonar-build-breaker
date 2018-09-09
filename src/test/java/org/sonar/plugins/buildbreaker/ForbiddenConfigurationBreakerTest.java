@@ -19,69 +19,71 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
+
+import static org.junit.Assert.assertEquals;
 
 public final class ForbiddenConfigurationBreakerTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-  @Test
-  public void testShouldExecuteSuccess() {
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+    @Test
+    public void testShouldExecuteSuccess() {
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
 
-    assertEquals(true, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject(null));
-  }
+        assertEquals(true, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject());
+    }
 
-  @Test
-  public void testShouldExecuteFailure() {
-    Settings settings = new Settings();
+    @Test
+    public void testShouldExecuteFailure() {
+        Settings settings = new MapSettings();
 
-    assertEquals(false, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject(null));
-  }
+        assertEquals(false, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject());
+    }
 
-  @Test
-  public void shouldNotFailWithoutAnyForbiddenConfSet() {
-    new ForbiddenConfigurationBreaker(new Settings()).executeOn(null, null);
-    // no exception expected
-  }
+    @Test
+    public void shouldNotFailWithoutAnyForbiddenConfSet() {
+        new ForbiddenConfigurationBreaker(new MapSettings()).execute(null);
+        // no exception expected
+    }
 
-  @Test
-  public void shouldFailIfForbiddenPropertyIsSet() {
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("A forbidden configuration has been found on the project: foo=bar");
+    @Test
+    public void shouldFailIfForbiddenPropertyIsSet() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("A forbidden configuration has been found on the project: foo=bar");
 
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
-    settings.setProperty("foo", "bar");
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+        settings.setProperty("foo", "bar");
 
-    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
-  }
+        new ForbiddenConfigurationBreaker(settings).execute(null);
+    }
 
-  @Test
-  public void shouldNotFailIfForbiddenPropertyValueIsDifferent() {
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
-    settings.setProperty("foo", "other_value");
+    @Test
+    public void shouldNotFailIfForbiddenPropertyValueIsDifferent() {
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+        settings.setProperty("foo", "other_value");
 
-    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
-    // no exception expected
-  }
+        new ForbiddenConfigurationBreaker(settings).execute(null);
+        // no exception expected
+    }
 
-  @Test
-  public void shouldFailIfForbiddenBooleanPropertyIsSet() {
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("A forbidden configuration has been found on the project: foo=true");
+    @Test
+    public void shouldFailIfForbiddenBooleanPropertyIsSet() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("A forbidden configuration has been found on the project: foo=true");
 
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");
-    settings.setProperty("foo", true);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");
+        settings.setProperty("foo", true);
 
-    new ForbiddenConfigurationBreaker(settings).executeOn(null, null);
-  }
+        new ForbiddenConfigurationBreaker(settings).execute(null);
+    }
 }

@@ -19,160 +19,144 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.batch.AnalysisMode;
-import org.sonar.api.batch.events.PostJobsPhaseHandler.PostJobsPhaseEvent;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.ProjectIssues;
 import org.sonar.api.rule.Severity;
 
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public final class IssuesSeverityBreakerTest {
 
-  @Rule public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-  @Test
-  public void testShouldExecuteSuccess() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(false);
+    @Test
+    public void testShouldExecuteSuccess() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(false);
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
 
-    // No exception
+        // No exception
 
-    assertEquals(
-        true,
-        new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
-            .shouldExecuteOnProject(null));
-  }
+        assertEquals(
+                true,
+                new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
+                        .shouldExecuteOnProject());
+    }
 
-  @Test
-  public void testShouldExecuteWrongAnalysisMode() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(true);
+    @Test
+    public void testShouldExecuteWrongAnalysisMode() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(true);
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
 
-    // No exception
+        // No exception
 
-    assertEquals(
-        false,
-        new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
-            .shouldExecuteOnProject(null));
-  }
+        assertEquals(
+                false,
+                new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
+                        .shouldExecuteOnProject());
+    }
 
-  @Test
-  public void testShouldExecuteDisabledFromSeveritySetting() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(false);
+    @Test
+    public void testShouldExecuteDisabledFromSeveritySetting() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(false);
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, BuildBreakerPlugin.DISABLED);
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, BuildBreakerPlugin.DISABLED);
 
-    // No exception
+        // No exception
 
-    assertEquals(
-        false,
-        new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
-            .shouldExecuteOnProject(null));
-  }
+        assertEquals(
+                false,
+                new IssuesSeverityBreaker(analysisMode, projectIssues, settings)
+                        .shouldExecuteOnProject());
+    }
 
-  @Test
-  public void testSeverityMajorFoundMajor() {
-    Issue issue1 = mock(Issue.class);
-    when(issue1.severity()).thenReturn(Severity.MINOR);
-    Issue issue2 = mock(Issue.class);
-    when(issue2.severity()).thenReturn(Severity.MAJOR);
+    @Test
+    public void testSeverityMajorFoundMajor() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(false);
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
+        Issue issue1 = mock(Issue.class);
+        when(issue1.severity()).thenReturn(Severity.MINOR);
+        Issue issue2 = mock(Issue.class);
+        when(issue2.severity()).thenReturn(Severity.MAJOR);
 
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
 
-    IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(null, projectIssues, settings);
-    breaker.executeOn(null, null);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
 
-    PostJobsPhaseEvent postJobsPhaseEvent = mock(PostJobsPhaseEvent.class);
-    when(postJobsPhaseEvent.isEnd()).thenReturn(true);
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Project contains issues with severity equal to or higher than MAJOR");
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Project contains issues with severity equal to or higher than MAJOR");
+        IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(analysisMode, projectIssues, settings);
+        breaker.execute(null);
+    }
 
-    breaker.onPostJobsPhase(postJobsPhaseEvent);
-  }
+    @Test
+    public void testSeverityMajorFoundCritical() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(false);
 
-  @Test
-  public void testSeverityMajorFoundCritical() {
-    Issue issue1 = mock(Issue.class);
-    when(issue1.severity()).thenReturn(Severity.MINOR);
-    Issue issue2 = mock(Issue.class);
-    when(issue2.severity()).thenReturn(Severity.CRITICAL);
+        Issue issue1 = mock(Issue.class);
+        when(issue1.severity()).thenReturn(Severity.MINOR);
+        Issue issue2 = mock(Issue.class);
+        when(issue2.severity()).thenReturn(Severity.CRITICAL);
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
 
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
 
-    IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(null, projectIssues, settings);
-    breaker.executeOn(null, null);
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Project contains issues with severity equal to or higher than MAJOR");
 
-    PostJobsPhaseEvent postJobsPhaseEvent = mock(PostJobsPhaseEvent.class);
-    when(postJobsPhaseEvent.isEnd()).thenReturn(true);
+        IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(analysisMode, projectIssues, settings);
+        breaker.execute(null);
+    }
 
-    thrown.expect(IllegalStateException.class);
-    thrown.expectMessage("Project contains issues with severity equal to or higher than MAJOR");
+    @Test
+    public void testSeverityMajorFoundNone() {
+        AnalysisMode analysisMode = mock(AnalysisMode.class);
+        when(analysisMode.isPublish()).thenReturn(false);
 
-    breaker.onPostJobsPhase(postJobsPhaseEvent);
-  }
+        Issue issue1 = mock(Issue.class);
+        when(issue1.severity()).thenReturn(Severity.INFO);
+        Issue issue2 = mock(Issue.class);
+        when(issue2.severity()).thenReturn(Severity.MINOR);
 
-  @Test
-  public void testSeverityMajorFoundNone() {
-    Issue issue1 = mock(Issue.class);
-    when(issue1.severity()).thenReturn(Severity.INFO);
-    Issue issue2 = mock(Issue.class);
-    when(issue2.severity()).thenReturn(Severity.MINOR);
+        ProjectIssues projectIssues = mock(ProjectIssues.class);
+        when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
 
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    when(projectIssues.issues()).thenReturn(Arrays.asList(issue1, issue2));
+        Settings settings = new MapSettings();
+        settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
 
-    Settings settings = new Settings();
-    settings.setProperty(BuildBreakerPlugin.ISSUES_SEVERITY_KEY, Severity.MAJOR);
+        IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(analysisMode, projectIssues, settings);
+        breaker.execute(null);
 
-    IssuesSeverityBreaker breaker = new IssuesSeverityBreaker(null, projectIssues, settings);
-    breaker.executeOn(null, null);
+        // No exception
+    }
 
-    PostJobsPhaseEvent postJobsPhaseEvent = mock(PostJobsPhaseEvent.class);
-    when(postJobsPhaseEvent.isEnd()).thenReturn(true);
-
-    // No exception
-
-    breaker.onPostJobsPhase(postJobsPhaseEvent);
-  }
-
-  @Test
-  public void testPhaseNotEnd() {
-    ProjectIssues projectIssues = mock(ProjectIssues.class);
-    Settings settings = new Settings();
-
-    PostJobsPhaseEvent postJobsPhaseEvent = mock(PostJobsPhaseEvent.class);
-    when(postJobsPhaseEvent.isEnd()).thenReturn(false);
-
-    // No exception
-
-    new IssuesSeverityBreaker(null, projectIssues, settings).onPostJobsPhase(postJobsPhaseEvent);
-  }
 }
