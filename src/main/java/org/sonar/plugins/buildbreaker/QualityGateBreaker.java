@@ -154,16 +154,13 @@ public final class QualityGateBreaker implements PostJob {
 
     @VisibleForTesting
     String getAnalysisId(WsClient wsClient, String ceTaskId) {
-        WsRequest ceTaskRequest =
-                new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
+        WsRequest ceTaskRequest = new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
 
         int queryMaxAttempts = settings.getInt(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY);
         int queryInterval = settings.getInt(BuildBreakerPlugin.QUERY_INTERVAL_KEY);
 
         for (int attempts = 0; attempts < queryMaxAttempts; attempts++) {
-            WsResponse wsResponse = wsClient.wsConnector().call(ceTaskRequest);
-
-            try {
+            try (WsResponse wsResponse = wsClient.wsConnector().call(ceTaskRequest)) {
                 TaskResponse taskResponse = TaskResponse.parseFrom(wsResponse.contentStream());
                 TaskStatus taskStatus = taskResponse.getTask().getStatus();
 
@@ -211,11 +208,11 @@ public final class QualityGateBreaker implements PostJob {
         LOGGER.info("Quality gate status: {}", status);
 
         int errors = 0;
-        if (Status.ERROR.equals(status) || Status.WARN.equals(status)) {
+        if (status == Status.ERROR || status == Status.WARN) {
             errors = logConditions(projectStatus.getConditionsList());
         }
 
-        if (Status.ERROR.equals(status)) {
+        if (status == Status.ERROR) {
             LOGGER.error("{} Project did not meet {} conditions", BuildBreakerPlugin.LOG_STAMP, errors);
             throw new IllegalStateException("Project does not pass the quality gate.");
         }
@@ -226,14 +223,14 @@ public final class QualityGateBreaker implements PostJob {
         int errors = 0;
 
         for (Condition condition : conditionsList) {
-            if (Status.WARN.equals(condition.getStatus())) {
+            if (condition.getStatus() == Status.WARN) {
                 LOGGER.warn(
                         "{}: {} {} {}",
                         getMetricName(condition.getMetricKey()),
                         condition.getActualValue(),
                         getComparatorSymbol(condition.getComparator()),
                         condition.getWarningThreshold());
-            } else if (Status.ERROR.equals(condition.getStatus())) {
+            } else if (condition.getStatus() == Status.ERROR) {
                 errors++;
                 LOGGER.error(
                         "{}: {} {} {}",
