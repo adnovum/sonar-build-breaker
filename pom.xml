@@ -1,156 +1,162 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonarsource.parent</groupId>
-    <artifactId>parent</artifactId>
-    <version>26</version>
-  </parent>
+    <parent>
+        <groupId>org.sonarsource.parent</groupId>
+        <artifactId>parent</artifactId>
+        <version>26</version>
+    </parent>
 
-  <groupId>org.sonarqubecommunity.buildbreaker</groupId>
-  <artifactId>sonar-build-breaker-plugin</artifactId>
-  <version>2.3-SNAPSHOT</version>
-  <packaging>sonar-plugin</packaging>
+    <groupId>org.sonarqubecommunity.buildbreaker</groupId>
+    <artifactId>sonar-build-breaker-plugin</artifactId>
+    <version>2.3-SNAPSHOT</version>
+    <packaging>sonar-plugin</packaging>
 
-  <name>SonarQube Build Breaker Plugin</name>
-  <description>Break the analyzer if the project does not pass its Quality Gate</description>
-  <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
-  <inceptionYear>2009</inceptionYear>
-
-  <organization>
-    <name>Matthew DeTullio and contributors</name>
-    <url>mailto:sonarqube@googlegroups.com</url>
-  </organization>
-
-  <developers>
-    <developer>
-      <id>mjdetullio</id>
-      <name>Matthew DeTullio</name>
-    </developer>
-  </developers>
-
-  <licenses>
-    <license>
-      <name>GNU LGPL 3</name>
-      <url>http://www.gnu.org/licenses/lgpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <scm>
-    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</developerConnection>
+    <name>SonarQube Build Breaker Plugin</name>
+    <description>Break the analyzer if the project does not pass its Quality Gate</description>
     <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
-    <tag>HEAD</tag>
-  </scm>
+    <inceptionYear>2009</inceptionYear>
 
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/SonarQubeCommunity/sonar-build-breaker/issues</url>
-  </issueManagement>
+    <organization>
+        <name>Matthew DeTullio and contributors</name>
+        <url>mailto:sonarqube@googlegroups.com</url>
+    </organization>
 
-  <ciManagement>
-    <system>Travis</system>
-    <url>https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker</url>
-  </ciManagement>
+    <developers>
+        <developer>
+            <id>mjdetullio</id>
+            <name>Matthew DeTullio</name>
+        </developer>
+    </developers>
 
-  <properties>
-    <license.owner>${project.organization.name}</license.owner>
-    <license.mailto>${project.organization.url}</license.mailto>
-    <sonar.version>7.3</sonar.version>
-    <sonar.pluginName>Build Breaker</sonar.pluginName>
-    <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
-    <version.sonar-packaging.plugin>1.17</version.sonar-packaging.plugin>
-  </properties>
+    <licenses>
+        <license>
+            <name>GNU LGPL 3</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonar.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-ws</artifactId>
-      <version>${sonar.version}</version>
-    </dependency>
-    <!-- unit tests -->
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>1.6.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>1.6.4</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-java</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <!-- PowerMock doesn't like these versions http://stackoverflow.com/a/25428318 -->
-                  <version>[1.7.0,1.7.0-65),[1.7.0-75,)</version>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.5.201505241946</version>
-        <executions>
-          <execution>
-            <id>default-prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>default-report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagNameFormat>@{project.version}</tagNameFormat>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <useReleaseProfile>false</useReleaseProfile>
-          <localCheckout>true</localCheckout>
-          <pushChanges>false</pushChanges>
-          <mavenExecutorId>forked-path</mavenExecutorId>
-          <preparationGoals>clean install</preparationGoals>
-          <goals>clean install</goals>
-          <!--
-          Allows to activate release profile during release.
-          We don't use releaseProfiles parameter, because it affects only release:perform goal
-          -->
-          <arguments>-Prelease</arguments>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <scm>
+        <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</connection>
+        <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</developerConnection>
+        <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/SonarQubeCommunity/sonar-build-breaker/issues</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Travis</system>
+        <url>https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker</url>
+    </ciManagement>
+
+    <properties>
+        <license.owner>${project.organization.name}</license.owner>
+        <license.mailto>${project.organization.url}</license.mailto>
+        <sonar.version>7.3</sonar.version>
+        <sonar.pluginName>Build Breaker</sonar.pluginName>
+        <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
+        <version.sonar-packaging.plugin>1.17</version.sonar-packaging.plugin>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.sonarsource.sonarqube</groupId>
+            <artifactId>sonar-plugin-api</artifactId>
+            <version>${sonar.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonarsource.sonarqube</groupId>
+            <artifactId>sonar-ws</artifactId>
+            <version>${sonar.version}</version>
+        </dependency>
+        <!-- unit tests -->
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.6.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.6.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <version>1.16</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <!-- PowerMock doesn't like these versions http://stackoverflow.com/a/25428318 -->
+                                    <version>[1.7.0,1.7.0-65),[1.7.0-75,)</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <localCheckout>true</localCheckout>
+                    <pushChanges>false</pushChanges>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <preparationGoals>clean install</preparationGoals>
+                    <goals>clean install</goals>
+                    <!--
+                    Allows to activate release profile during release.
+                    We don't use releaseProfiles parameter, because it affects only release:perform goal
+                    -->
+                    <arguments>-Prelease</arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
