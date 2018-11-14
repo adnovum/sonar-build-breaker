@@ -19,43 +19,45 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.google.common.collect.Lists;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
-import org.sonarqube.ws.WsCe.Task;
-import org.sonarqube.ws.WsCe.TaskResponse;
-import org.sonarqube.ws.WsCe.TaskStatus;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Comparator;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Condition;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.ProjectStatus;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Status;
+import org.sonar.api.config.internal.MapSettings;
+import org.sonarqube.ws.Ce.Task;
+import org.sonarqube.ws.Ce.TaskResponse;
+import org.sonarqube.ws.Ce.TaskStatus;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Comparator;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Condition;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.ProjectStatus;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Status;
 import org.sonarqube.ws.client.WsClient;
 import org.sonarqube.ws.client.WsConnector;
 import org.sonarqube.ws.client.WsRequest;
 import org.sonarqube.ws.client.WsResponse;
-import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
-import org.sonarqube.ws.client.qualitygate.QualityGatesService;
+import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
+import org.sonarqube.ws.client.qualitygates.QualitygatesService;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("javax.net.ssl.*")
 @PrepareForTest(TaskResponse.class)
 public final class QualityGateBreakerTest {
   private static final String TEST_TASK_ID = "Abc123";
@@ -69,14 +71,13 @@ public final class QualityGateBreakerTest {
     when(analysisMode.isPublish()).thenReturn(true);
 
     FileSystem fileSystem = mock(FileSystem.class);
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
 
     // No exception
 
     assertEquals(
-        true,
-        new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject(null));
+        true, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
   }
 
   @Test
@@ -85,14 +86,13 @@ public final class QualityGateBreakerTest {
     when(analysisMode.isPublish()).thenReturn(false);
 
     FileSystem fileSystem = mock(FileSystem.class);
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
 
     // No exception
 
     assertEquals(
-        false,
-        new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject(null));
+        false, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
   }
 
   @Test
@@ -101,26 +101,28 @@ public final class QualityGateBreakerTest {
     when(analysisMode.isPublish()).thenReturn(true);
 
     FileSystem fileSystem = mock(FileSystem.class);
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
 
     // No exception
 
     assertEquals(
-        false,
-        new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject(null));
+        false, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
   }
 
   @Test
   public void testNoReportTaskTxtFile() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
     FileSystem fileSystem = mock(FileSystem.class);
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
 
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
     thrown.expectMessage("Unable to load properties from file");
 
-    new QualityGateBreaker(null, fileSystem, settings).executeOn(null, null);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
   }
 
   /**
@@ -129,23 +131,26 @@ public final class QualityGateBreakerTest {
    */
   @Test
   public void testQueryMaxAttemptsReached() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
     FileSystem fileSystem = mock(FileSystem.class);
     when(fileSystem.workDir())
         .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(null, fileSystem, settings).executeOn(null, null);
+    new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
   }
 
   @Test
   public void testSingleQueryInProgressStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -171,7 +176,7 @@ public final class QualityGateBreakerTest {
   public void testSingleQueryPendingStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -197,7 +202,7 @@ public final class QualityGateBreakerTest {
   public void testSingleQueryFailedStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -223,7 +228,7 @@ public final class QualityGateBreakerTest {
   public void testSingleQueryCanceledStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -249,7 +254,7 @@ public final class QualityGateBreakerTest {
   public void testSingleQuerySuccessStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -275,7 +280,7 @@ public final class QualityGateBreakerTest {
   public void testSingleQueryIOException() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
@@ -298,17 +303,17 @@ public final class QualityGateBreakerTest {
   public void testQualityGateStatusWarning() {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
-    QualityGatesService qualityGatesService = mock(QualityGatesService.class);
+    QualitygatesService qualityGatesService = mock(QualitygatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.WARN).build();
-    ProjectStatusWsResponse projectStatusWsResponse =
-        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusResponse projectStatusWsResponse =
+        ProjectStatusResponse.newBuilder().setProjectStatus(projectStatus).build();
 
-    when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+    when(wsClient.qualitygates()).thenReturn(qualityGatesService);
+    when(qualityGatesService.projectStatus(any(ProjectStatusRequest.class)))
         .thenReturn(projectStatusWsResponse);
 
     // No exception
@@ -320,17 +325,17 @@ public final class QualityGateBreakerTest {
   public void testQualityGateStatusError() {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
-    QualityGatesService qualityGatesService = mock(QualityGatesService.class);
+    QualitygatesService qualityGatesService = mock(QualitygatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.ERROR).build();
-    ProjectStatusWsResponse projectStatusWsResponse =
-        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusResponse projectStatusWsResponse =
+        ProjectStatusResponse.newBuilder().setProjectStatus(projectStatus).build();
 
-    when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+    when(wsClient.qualitygates()).thenReturn(qualityGatesService);
+    when(qualityGatesService.projectStatus(any(ProjectStatusRequest.class)))
         .thenReturn(projectStatusWsResponse);
 
     thrown.expect(IllegalStateException.class);
@@ -343,17 +348,17 @@ public final class QualityGateBreakerTest {
   public void testQualityGateStatusOk() {
     FileSystem fileSystem = mock(FileSystem.class);
 
-    Settings settings = new Settings();
+    Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
 
     WsClient wsClient = mock(WsClient.class);
-    QualityGatesService qualityGatesService = mock(QualityGatesService.class);
+    QualitygatesService qualityGatesService = mock(QualitygatesService.class);
     ProjectStatus projectStatus = ProjectStatus.newBuilder().setStatus(Status.OK).build();
-    ProjectStatusWsResponse projectStatusWsResponse =
-        ProjectStatusWsResponse.newBuilder().setProjectStatus(projectStatus).build();
+    ProjectStatusResponse projectStatusWsResponse =
+        ProjectStatusResponse.newBuilder().setProjectStatus(projectStatus).build();
 
-    when(wsClient.qualityGates()).thenReturn(qualityGatesService);
-    when(qualityGatesService.projectStatus(any(ProjectStatusWsRequest.class)))
+    when(wsClient.qualitygates()).thenReturn(qualityGatesService);
+    when(qualityGatesService.projectStatus(any(ProjectStatusRequest.class)))
         .thenReturn(projectStatusWsResponse);
 
     // No exception

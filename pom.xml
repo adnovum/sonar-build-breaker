@@ -57,11 +57,10 @@
   <properties>
     <license.owner>${project.organization.name}</license.owner>
     <license.mailto>${project.organization.url}</license.mailto>
-    <sonar.version>5.3</sonar.version>
+    <sonar.version>7.3</sonar.version>
     <sonar.pluginName>Build Breaker</sonar.pluginName>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
-    <!-- Last JDK 1.7 compatible packaging plugin version -->
-    <version.sonar-packaging.plugin>1.16</version.sonar-packaging.plugin>
+    <version.sonar-packaging.plugin>1.17</version.sonar-packaging.plugin>
   </properties>
 
   <dependencies>
