@@ -2,6 +2,11 @@
 
 [![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker) [![SonarQube.com Quality Gate status](https://sonarqube.com/api/badges/gate?key=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)](https://sonarqube.com/overview?id=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)
 
+## About This Fork
+
+This fork was created with the purpose of keeping [the original plugin](https://github.com/SonarQubeCommunity/sonar-build-breaker/) alive
+and compatible with SonarQube versions 7.7 and newer.
+
 ## Compatibility
 
 | SonarQube Version | Plugin Version(s) |
@@ -10,7 +15,8 @@
 | 3.0 - 5.1         | 1.0, 1.1 |
 | 5.2               | Not compatible due to limitations with SonarQube platform |
 | 5.3 - 5.4         | 2.0, 2.1, 2.2 |
-| 5.5 - 6.3         | 2.1, 2.2 |
+| 5.5 - 7.2         | 2.1, 2.2 |
+| 7.3 - 7.7         | 2.3 |
 
 ## Download and Installation
 
@@ -46,10 +52,6 @@ exit status.
 
 ### Quality Gate Build Breaker
 
-This build breaker is only available in publish mode (`sonar.analysis.mode=publish`, the default).
-SonarQube calculates the quality gate status server-side, and only publish mode sends analysis results
-to the server.
-
 1. Associate a quality gate to your project
 2. Optional: Tune `sonar.buildbreaker.queryMaxAttempts` and/or `sonar.buildbreaker.queryInterval`
   1. Check the duration of previous CE (background) tasks for your project, from submission until completion
@@ -67,16 +69,6 @@ the build.
 For example, if you set the property to `sonar.gallio.mode=skip`, each analysis on .NET projects executed with
 Gallio skipped will be marked "broken".
 
-### Issues Severity Build Breaker
-
-This build breaker is only available in preview modes (`sonar.analysis.mode=preview` or
-`sonar.analysis.mode=issues`).  In publish mode, issue severity data is not available to post-job
-checkers.
-
-1. Define the property `sonar.buildbreaker.preview.issuesSeverity`
-2. Define `sonar.analysis.mode=preview`
-3. Ensure `sonar.preview.excludePlugins` does not have `buildbreaker` in the list (prior to SonarQube 6.2, it is in the list by default)
-
 ### Configuration Parameters
 
 | Property | Description | Default value | Example |
@@ -86,7 +78,6 @@ checkers.
 | `sonar.buildbreaker.queryInterval` | The interval (ms) between queries to the API when waiting for report processing.  Total wait time is `sonar.buildbreaker.queryMaxAttempts * sonar.buildbreaker.queryInterval`. | `10000` | |
 | `sonar.buildbreaker.forbiddenConf` | Comma-separated list of `key=value` pairs that should break the build. | | `sonar.gallio.mode=skip` |
 | `sonar.buildbreaker.alternativeServerUrl` | URL to use for web service requests. If unset, uses the `serverUrl` property from `${sonar.working.directory}/report-task.txt`. | | |
-| `sonar.buildbreaker.preview.issuesSeverity` | Fails the build in preview analysis mode if the severity of issues is equal to or more severe than the selection. | `Disabled` | Available selections are (case insensitive): `Disabled`, `INFO`, `MINOR`, `MAJOR`, `CRITICAL`, `BLOCKER` |
 
 ## Contributing
 
