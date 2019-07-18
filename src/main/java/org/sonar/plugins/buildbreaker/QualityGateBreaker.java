@@ -55,7 +55,7 @@ import java.util.Properties;
  * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks
  * the project's quality gate. Breaks the build if the quality gate has failed.
  */
-public final class QualityGateBreaker implements PostJob {
+public class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
@@ -169,6 +169,11 @@ public final class QualityGateBreaker implements PostJob {
   }
 
   @VisibleForTesting
+  TaskResponse getTask(WsResponse wsResponse) throws IOException {
+	  return TaskResponse.parseFrom(wsResponse.contentStream());
+  }
+  
+  @VisibleForTesting
   String getAnalysisId(WsClient wsClient, String ceTaskId) {
     WsRequest ceTaskRequest =
         new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
@@ -180,7 +185,7 @@ public final class QualityGateBreaker implements PostJob {
       WsResponse wsResponse = wsClient.wsConnector().call(ceTaskRequest);
 
       try {
-        TaskResponse taskResponse = TaskResponse.parseFrom(wsResponse.contentStream());
+        TaskResponse taskResponse = getTask(wsResponse);
         TaskStatus taskStatus = taskResponse.getTask().getStatus();
 
         switch (taskStatus) {
