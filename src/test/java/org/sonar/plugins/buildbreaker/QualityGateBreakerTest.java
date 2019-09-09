@@ -148,6 +148,29 @@ public final class QualityGateBreakerTest {
     new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
   }
 
+  /**
+   * This test follows the same pattern as {@link #testQueryMaxAttemptsReached()}, but with a different report
+   * file path.
+   */
+  @Test
+  public void testCustomReportFilePath() {
+    AnalysisMode analysisMode = mock(AnalysisMode.class);
+    when(analysisMode.isPublish()).thenReturn(true);
+
+    String reportFilePath = "/some/non/default/path/report-task.txt";
+    FileSystem fileSystem = mock(FileSystem.class);
+    when(fileSystem.resolvePath(reportFilePath))
+            .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker", "report-task.txt"));
+
+    Settings settings = new MapSettings();
+    settings.setProperty(QualityGateBreaker.SONAR_PROPERTY_METADATA_FILE_PATH, reportFilePath);
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
+
+    new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
+  }
+
   @Test
   public void testSingleQueryInProgressStatus() throws IOException {
     FileSystem fileSystem = mock(FileSystem.class);

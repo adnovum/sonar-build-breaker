@@ -19,8 +19,8 @@
  */
 package org.sonar.plugins.buildbreaker;
 
-import com.google.common.base.Strings;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
@@ -33,8 +33,8 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonarqube.ws.Ce.TaskStatus;
 import org.sonarqube.ws.Ce.TaskResponse;
+import org.sonarqube.ws.Ce.TaskStatus;
 import org.sonarqube.ws.MediaTypes;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Comparator;
@@ -58,6 +58,7 @@ import java.util.Properties;
 public class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
+  static final String SONAR_PROPERTY_METADATA_FILE_PATH = "sonar.scanner.metadataFilePath";
 
   private final AnalysisMode analysisMode;
   private final FileSystem fileSystem;
@@ -155,7 +156,7 @@ public class QualityGateBreaker implements PostJob {
   }
 
   private Properties loadReportTaskProps() {
-    File reportTaskFile = new File(fileSystem.workDir(), "report-task.txt");
+    File reportTaskFile = getReportTaskFilePath();
 
     Properties reportTaskProps = new Properties();
 
@@ -166,6 +167,16 @@ public class QualityGateBreaker implements PostJob {
     }
 
     return reportTaskProps;
+  }
+
+  private File getReportTaskFilePath() {
+    if (settings.getProperties().containsKey(SONAR_PROPERTY_METADATA_FILE_PATH)) {
+      String path = settings.getProperties().get(SONAR_PROPERTY_METADATA_FILE_PATH);
+
+      return fileSystem.resolvePath(path);
+    }
+
+    return new File(fileSystem.workDir(), "report-task.txt");
   }
 
   @VisibleForTesting
