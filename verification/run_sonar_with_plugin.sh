@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Starts Sonarqube as a docker container including the locally built
+# sonar-build-breaker plugin.
+# Usage: run_sonar_with_plugin.sh [sonarqube docker tag]
+set -euo pipefail
+BASEDIR=$(dirname "$0")
+PLUGIN_JAR=$(realpath $BASEDIR/../target/sonar-build-breaker-plugin-*.jar)
+TAG=${1:-lts}
+
+echo "Starting sonarqube:$TAG and plugin $PLUGIN_JAR"
+docker run -d --rm --name sonarqube -p 9000:9000 \
+    -v $PLUGIN_JAR:/opt/sonarqube/extensions/plugins/sonar-build-breaker-plugin.jar \
+    sonarqube:$TAG
+
+# Create a custom quality gate which breaks on any vulnerability issues, not just in new code.
+# If we don't use this, our dummy projects won't break unless we analyze them, then add issues manually, then reanalyze them.
+gateId=2
+docker exec -i sonarqube bash <<-EOF
+    while [[ "\$(curl -s -o /dev/null -w '%{http_code}' localhost:9000/api/qualitygates/list)" != "200" ]]; do 
+        echo "Waiting for Sonarqube..."
+        sleep 3
+    done
+    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/copy?id=1&name=MyQualityGate"    
+    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/create_condition?gateId=${gateId}&metric=vulnerabilities&op=GT&error=0"
+    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/set_as_default?id=${gateId}"
+EOF
