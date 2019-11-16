@@ -3,11 +3,6 @@
 [![Build Status](https://travis-ci.com/sandro-h/sonar-build-breaker.svg?branch=master)](https://travis-ci.com/sandro-h/sonar-build-breaker)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sandro-h_sonar-build-breaker&metric=alert_status)](https://sonarcloud.io/dashboard?id=sandro-h_sonar-build-breaker)
 
-## About This Fork
-
-This fork was created with the purpose of keeping [the original plugin](https://github.com/SonarQubeCommunity/sonar-build-breaker/) alive
-and compatible with SonarQube versions 7.7 and newer.
-
 ## Compatibility
 
 | SonarQube Version | Plugin Version(s) |

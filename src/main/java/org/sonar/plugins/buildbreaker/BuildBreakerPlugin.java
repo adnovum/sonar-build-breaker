@@ -25,7 +25,6 @@ import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.resources.Qualifiers;
-import org.sonar.api.rule.Severity;
 
 /** Registers the plugin with SonarQube and defines the available configuration properties. */
 public final class BuildBreakerPlugin extends SonarPlugin {

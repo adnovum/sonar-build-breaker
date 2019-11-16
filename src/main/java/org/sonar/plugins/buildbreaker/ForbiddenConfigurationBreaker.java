@@ -20,14 +20,13 @@
 package org.sonar.plugins.buildbreaker;
 
 import com.google.common.base.Splitter;
+import java.util.List;
 import org.sonar.api.batch.postjob.PostJob;
 import org.sonar.api.batch.postjob.PostJobContext;
 import org.sonar.api.batch.postjob.PostJobDescriptor;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-
-import java.util.List;
 
 /**
  * Checks the analysis parameters for forbidden configurations. Breaks the build if at least one of

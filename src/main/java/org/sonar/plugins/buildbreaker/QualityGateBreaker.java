@@ -22,6 +22,12 @@ package org.sonar.plugins.buildbreaker;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Properties;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.fs.FileSystem;
@@ -33,8 +39,8 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
-import org.sonarqube.ws.Ce.TaskStatus;
 import org.sonarqube.ws.Ce.TaskResponse;
+import org.sonarqube.ws.Ce.TaskStatus;
 import org.sonarqube.ws.MediaTypes;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Comparator;
@@ -43,13 +49,6 @@ import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.ProjectStatus;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Status;
 import org.sonarqube.ws.client.*;
 import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Properties;
 
 /**
  * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks
