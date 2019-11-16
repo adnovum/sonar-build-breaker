@@ -22,45 +22,40 @@ package org.sonar.plugins.buildbreaker;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import org.sonar.api.CoreProperties;
+import org.sonar.api.batch.AnalysisMode;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.postjob.PostJob;
+import org.sonar.api.batch.postjob.PostJobContext;
+import org.sonar.api.batch.postjob.PostJobDescriptor;
+import org.sonar.api.config.Settings;
+import org.sonar.api.measures.CoreMetrics;
+import org.sonar.api.measures.Metric;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonarqube.ws.Ce.TaskStatus;
+import org.sonarqube.ws.Ce.TaskResponse;
+import org.sonarqube.ws.MediaTypes;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Comparator;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Condition;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.ProjectStatus;
+import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Status;
+import org.sonarqube.ws.client.*;
+import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
-import org.sonar.api.CoreProperties;
-import org.sonar.api.batch.AnalysisMode;
-import org.sonar.api.batch.CheckProject;
-import org.sonar.api.batch.PostJob;
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Settings;
-import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Metric;
-import org.sonar.api.resources.Project;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
-import org.sonarqube.ws.MediaTypes;
-import org.sonarqube.ws.WsCe.TaskResponse;
-import org.sonarqube.ws.WsCe.TaskStatus;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Comparator;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Condition;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.ProjectStatus;
-import org.sonarqube.ws.WsQualityGates.ProjectStatusWsResponse.Status;
-import org.sonarqube.ws.client.GetRequest;
-import org.sonarqube.ws.client.HttpConnector;
-import org.sonarqube.ws.client.HttpWsClient;
-import org.sonarqube.ws.client.WsClient;
-import org.sonarqube.ws.client.WsRequest;
-import org.sonarqube.ws.client.WsResponse;
-import org.sonarqube.ws.client.qualitygate.ProjectStatusWsRequest;
 
 /**
  * Retrieves the ID of the server-side Compute Engine task, waits for task completion, then checks
  * the project's quality gate. Breaks the build if the quality gate has failed.
  */
-public final class QualityGateBreaker implements CheckProject, PostJob {
+public final class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
@@ -81,8 +76,58 @@ public final class QualityGateBreaker implements CheckProject, PostJob {
     this.settings = settings;
   }
 
-  @Override
-  public boolean shouldExecuteOnProject(Project project) {
+  @VisibleForTesting
+  static int logConditions(List<Condition> conditionsList) {
+    int errors = 0;
+
+    for (Condition condition : conditionsList) {
+      if (Status.WARN.equals(condition.getStatus())) {
+        LOGGER.warn(
+            "{}: {} {} {}",
+            getMetricName(condition.getMetricKey()),
+            condition.getActualValue(),
+            getComparatorSymbol(condition.getComparator()),
+            condition.getWarningThreshold());
+      } else if (Status.ERROR.equals(condition.getStatus())) {
+        errors++;
+        LOGGER.error(
+            "{}: {} {} {}",
+            getMetricName(condition.getMetricKey()),
+            condition.getActualValue(),
+            getComparatorSymbol(condition.getComparator()),
+            condition.getErrorThreshold());
+      }
+    }
+
+    return errors;
+  }
+
+  private static String getMetricName(String metricKey) {
+    try {
+      Metric metric = CoreMetrics.getMetric(metricKey);
+      return metric.getName();
+    } catch (NoSuchElementException e) {
+      LOGGER.trace("Using key as name for custom metric '{}' due to '{}'", metricKey, e);
+    }
+    return metricKey;
+  }
+
+  private static String getComparatorSymbol(Comparator comparator) {
+    switch (comparator) {
+      case GT:
+        return ">";
+      case LT:
+        return "<";
+      case EQ:
+        return "=";
+      case NE:
+        return "!=";
+      default:
+        return comparator.toString();
+    }
+  }
+
+  public boolean shouldExecuteOnProject() {
     if (!analysisMode.isPublish()) {
       LOGGER.debug(
           "{} is disabled ({} != {})",
@@ -96,25 +141,6 @@ public final class QualityGateBreaker implements CheckProject, PostJob {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public void executeOn(Project project, SensorContext context) {
-    Properties reportTaskProps = loadReportTaskProps();
-
-    HttpConnector httpConnector =
-        new HttpConnector.Builder()
-            .url(getServerUrl(reportTaskProps))
-            .credentials(
-                settings.getString(CoreProperties.LOGIN),
-                settings.getString(CoreProperties.PASSWORD))
-            .build();
-
-    WsClient wsClient = new HttpWsClient(httpConnector);
-
-    String analysisId = getAnalysisId(wsClient, reportTaskProps.getProperty("ceTaskId"));
-
-    checkQualityGate(wsClient, analysisId);
   }
 
   private String getServerUrl(Properties reportTaskProps) {
@@ -192,10 +218,8 @@ public final class QualityGateBreaker implements CheckProject, PostJob {
   @VisibleForTesting
   void checkQualityGate(WsClient wsClient, String analysisId) {
     LOGGER.debug("Requesting quality gate status for analysisId {}", analysisId);
-    ProjectStatusWsResponse projectStatusResponse =
-        wsClient
-            .qualityGates()
-            .projectStatus(new ProjectStatusWsRequest().setAnalysisId(analysisId));
+    ProjectStatusResponse projectStatusResponse =
+        wsClient.qualitygates().projectStatus(new ProjectStatusRequest().setAnalysisId(analysisId));
 
     ProjectStatus projectStatus = projectStatusResponse.getProjectStatus();
 
@@ -213,54 +237,29 @@ public final class QualityGateBreaker implements CheckProject, PostJob {
     }
   }
 
-  @VisibleForTesting
-  static int logConditions(List<Condition> conditionsList) {
-    int errors = 0;
-
-    for (Condition condition : conditionsList) {
-      if (Status.WARN.equals(condition.getStatus())) {
-        LOGGER.warn(
-            "{}: {} {} {}",
-            getMetricName(condition.getMetricKey()),
-            condition.getActualValue(),
-            getComparatorSymbol(condition.getComparator()),
-            condition.getWarningThreshold());
-      } else if (Status.ERROR.equals(condition.getStatus())) {
-        errors++;
-        LOGGER.error(
-            "{}: {} {} {}",
-            getMetricName(condition.getMetricKey()),
-            condition.getActualValue(),
-            getComparatorSymbol(condition.getComparator()),
-            condition.getErrorThreshold());
-      }
-    }
-
-    return errors;
+  @Override
+  public void describe(PostJobDescriptor descriptor) {
+    descriptor.name("Quality Gate Breaker");
   }
 
-  private static String getMetricName(String metricKey) {
-    try {
-      Metric metric = CoreMetrics.getMetric(metricKey);
-      return metric.getName();
-    } catch (NoSuchElementException e) {
-      LOGGER.trace("Using key as name for custom metric '{}' due to '{}'", metricKey, e);
-    }
-    return metricKey;
-  }
+  @Override
+  public void execute(PostJobContext postJobContext) {
+    if (shouldExecuteOnProject()) {
+      Properties reportTaskProps = loadReportTaskProps();
 
-  private static String getComparatorSymbol(Comparator comparator) {
-    switch (comparator) {
-      case GT:
-        return ">";
-      case LT:
-        return "<";
-      case EQ:
-        return "=";
-      case NE:
-        return "!=";
-      default:
-        return comparator.toString();
+      HttpConnector httpConnector =
+          HttpConnector.newBuilder()
+              .url(getServerUrl(reportTaskProps))
+              .credentials(
+                  settings.getString(CoreProperties.LOGIN),
+                  settings.getString(CoreProperties.PASSWORD))
+              .build();
+
+      WsClient wsClient = WsClientFactories.getDefault().newClient(httpConnector);
+
+      String analysisId = getAnalysisId(wsClient, reportTaskProps.getProperty("ceTaskId"));
+
+      checkQualityGate(wsClient, analysisId);
     }
   }
 }

@@ -47,15 +47,10 @@ public final class BuildBreakerPlugin extends SonarPlugin {
 
   static final String ALTERNATIVE_SERVER_URL_KEY = "sonar.buildbreaker.alternativeServerUrl";
 
-  static final String ISSUES_SEVERITY_KEY = "sonar.buildbreaker.preview.issuesSeverity";
-
-  static final String DISABLED = "Disabled";
-
   @Override
   public List getExtensions() {
     return Arrays.asList(
         ForbiddenConfigurationBreaker.class,
-        IssuesSeverityBreaker.class,
         QualityGateBreaker.class,
         PropertyDefinition.builder(SKIP_KEY)
             .name("Skip quality gate check")
@@ -97,22 +92,6 @@ public final class BuildBreakerPlugin extends SonarPlugin {
                 "URL to use for web service requests. If unset, uses the <code>serverUrl</code> "
                     + "property from <code>${sonar.working.directory}/report-task.txt</code>.")
             .onQualifiers(Qualifiers.PROJECT)
-            .build(),
-        PropertyDefinition.builder(ISSUES_SEVERITY_KEY)
-            .name("Issues severity failure level (preview analysis)")
-            .description(
-                "Fails the build in preview analysis mode if the severity of issues is equal to or "
-                    + "more severe than the selection.")
-            .onQualifiers(Qualifiers.PROJECT)
-            .type(PropertyType.SINGLE_SELECT_LIST)
-            .options(
-                DISABLED,
-                Severity.INFO,
-                Severity.MINOR,
-                Severity.MAJOR,
-                Severity.CRITICAL,
-                Severity.BLOCKER)
-            .defaultValue(DISABLED)
             .build());
   }
 }
