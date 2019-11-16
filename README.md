@@ -97,8 +97,7 @@ waiting for review.  This project is maintained on a best-effort basis (aka duri
 
 ### Pull Request Guidelines
 
-1. This project uses [google-java-format](https://github.com/google/google-java-format), so please
-   ensure all Java code is formatted with this tool
+1. This project uses [google-java-format](https://github.com/google/google-java-format). The code is auto-formatted whenever you build it.
 2. For the most part, the project follows standard Oracle Java code conventions
 3. Include unit tests
    1. Do not use PowerMock unless there is no alternative
