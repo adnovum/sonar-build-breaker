@@ -1,6 +1,7 @@
 # SonarQube Build Breaker Plugin
 
-[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-build-breaker.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker) [![SonarQube.com Quality Gate status](https://sonarqube.com/api/badges/gate?key=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)](https://sonarqube.com/overview?id=org.sonarqubecommunity.buildbreaker%3Asonar-build-breaker-plugin)
+[![Build Status](https://travis-ci.com/sandro-h/sonar-build-breaker.svg?branch=master)](https://travis-ci.com/sandro-h/sonar-build-breaker)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sandro-h_sonar-build-breaker&metric=alert_status)](https://sonarcloud.io/dashboard?id=sandro-h_sonar-build-breaker)
 
 ## Compatibility
 

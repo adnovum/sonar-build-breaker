@@ -6,12 +6,17 @@ dist: trusty
 jdk:
   - oraclejdk8
 
+addons:
+  sonarcloud:
+    organization: sandro-h-github
+
 script:
   # Run this first, because verify builds the project and runs the auto-formatting.
   # But we want to detect commits that don't adhere to the format. E.g. if someone
   # makes last-minute code changes without rebuilding it locally (which would auto-format).
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -B -e -V
+  - mvn sonar:sonar -Dsonar.projectKey=sandro-h_sonar-build-breaker
 
 cache:
   directories:
