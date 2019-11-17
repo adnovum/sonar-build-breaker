@@ -29,12 +29,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.postjob.PostJob;
 import org.sonar.api.batch.postjob.PostJobContext;
 import org.sonar.api.batch.postjob.PostJobDescriptor;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.utils.log.Logger;
@@ -58,21 +57,18 @@ public final class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
-  private final AnalysisMode analysisMode;
   private final FileSystem fileSystem;
-  private final Settings settings;
+  private final Configuration config;
 
   /**
    * Constructor used to inject dependencies.
    *
-   * @param analysisMode the analysis mode
    * @param fileSystem the analysis' file system
-   * @param settings the project settings
+   * @param config the project configuration
    */
-  public QualityGateBreaker(AnalysisMode analysisMode, FileSystem fileSystem, Settings settings) {
-    this.analysisMode = analysisMode;
+  public QualityGateBreaker(FileSystem fileSystem, Configuration config) {
     this.fileSystem = fileSystem;
-    this.settings = settings;
+    this.config = config;
   }
 
   @VisibleForTesting
@@ -127,15 +123,7 @@ public final class QualityGateBreaker implements PostJob {
   }
 
   public boolean shouldExecuteOnProject() {
-    if (!analysisMode.isPublish()) {
-      LOGGER.debug(
-          "{} is disabled ({} != {})",
-          CLASSNAME,
-          CoreProperties.ANALYSIS_MODE,
-          CoreProperties.ANALYSIS_MODE_PUBLISH);
-      return false;
-    }
-    if (settings.getBoolean(BuildBreakerPlugin.SKIP_KEY)) {
+    if (config.getBoolean(BuildBreakerPlugin.SKIP_KEY).orElse(false)) {
       LOGGER.debug("{} is disabled ({} = true)", CLASSNAME, BuildBreakerPlugin.SKIP_KEY);
       return false;
     }
@@ -143,7 +131,7 @@ public final class QualityGateBreaker implements PostJob {
   }
 
   private String getServerUrl(Properties reportTaskProps) {
-    String altServerUrl = settings.getString(BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY);
+    String altServerUrl = config.get(BuildBreakerPlugin.ALTERNATIVE_SERVER_URL_KEY).orElse(null);
     if (Strings.isNullOrEmpty(altServerUrl)) {
       return reportTaskProps.getProperty("serverUrl");
     } else {
@@ -174,8 +162,8 @@ public final class QualityGateBreaker implements PostJob {
     WsRequest ceTaskRequest =
         new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
 
-    int queryMaxAttempts = settings.getInt(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY);
-    int queryInterval = settings.getInt(BuildBreakerPlugin.QUERY_INTERVAL_KEY);
+    int queryMaxAttempts = config.getInt(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY).orElse(0);
+    int queryInterval = config.getInt(BuildBreakerPlugin.QUERY_INTERVAL_KEY).orElse(0);
 
     for (int attempts = 0; attempts < queryMaxAttempts; attempts++) {
       WsResponse wsResponse = wsClient.wsConnector().call(ceTaskRequest);
@@ -250,8 +238,8 @@ public final class QualityGateBreaker implements PostJob {
           HttpConnector.newBuilder()
               .url(getServerUrl(reportTaskProps))
               .credentials(
-                  settings.getString(CoreProperties.LOGIN),
-                  settings.getString(CoreProperties.PASSWORD))
+                  config.get(CoreProperties.LOGIN).orElse(null),
+                  config.get(CoreProperties.PASSWORD).orElse(null))
               .build();
 
       WsClient wsClient = WsClientFactories.getDefault().newClient(httpConnector);

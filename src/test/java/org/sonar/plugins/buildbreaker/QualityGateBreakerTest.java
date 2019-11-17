@@ -36,9 +36,10 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.sonar.api.batch.AnalysisMode;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonarqube.ws.Ce.Task;
 import org.sonarqube.ws.Ce.TaskResponse;
@@ -66,62 +67,39 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testShouldExecuteSuccess() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(true);
-
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
+    Configuration config = new ConfigurationBridge(settings);
 
     // No exception
 
-    assertEquals(
-        true, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
-  }
-
-  @Test
-  public void testShouldExecuteWrongAnalysisMode() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(false);
-
-    FileSystem fileSystem = mock(FileSystem.class);
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
-
-    // No exception
-
-    assertEquals(
-        false, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
+    assertEquals(true, new QualityGateBreaker(fileSystem, config).shouldExecuteOnProject());
   }
 
   @Test
   public void testShouldExecuteDisabledFromSkipSetting() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(true);
-
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
+    Configuration config = new ConfigurationBridge(settings);
 
     // No exception
 
-    assertEquals(
-        false, new QualityGateBreaker(analysisMode, fileSystem, settings).shouldExecuteOnProject());
+    assertEquals(false, new QualityGateBreaker(fileSystem, config).shouldExecuteOnProject());
   }
 
   @Test
   public void testNoReportTaskTxtFile() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(true);
-
     FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new MapSettings();
+    Configuration config = new ConfigurationBridge(settings);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
     thrown.expectMessage("Unable to load properties from file");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
+    new QualityGateBreaker(fileSystem, config).execute(null);
   }
 
   /**
@@ -130,19 +108,17 @@ public final class QualityGateBreakerTest {
    */
   @Test
   public void testQueryMaxAttemptsReached() {
-    AnalysisMode analysisMode = mock(AnalysisMode.class);
-    when(analysisMode.isPublish()).thenReturn(true);
-
     FileSystem fileSystem = mock(FileSystem.class);
     when(fileSystem.workDir())
         .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
 
     Settings settings = new MapSettings();
+    Configuration config = new ConfigurationBridge(settings);
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(analysisMode, fileSystem, settings).execute(null);
+    new QualityGateBreaker(fileSystem, config).execute(null);
   }
 
   @Test
@@ -151,6 +127,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -168,7 +145,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -177,6 +154,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -194,7 +172,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
 
-    new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -203,6 +181,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -220,7 +199,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: FAILED");
 
-    new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -229,6 +208,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -246,7 +226,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing did not complete successfully: CANCELED");
 
-    new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -255,6 +235,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -271,7 +252,7 @@ public final class QualityGateBreakerTest {
     when(taskResponse.getTask()).thenReturn(task);
 
     String analysisId =
-        new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+        new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
     assertEquals(TEST_ANALYSIS_ID, analysisId);
   }
 
@@ -281,6 +262,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -295,7 +277,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
 
-    new QualityGateBreaker(null, fileSystem, settings).getAnalysisId(wsClient, TEST_TASK_ID);
+    new QualityGateBreaker(fileSystem, config).getAnalysisId(wsClient, TEST_TASK_ID);
   }
 
   @Test
@@ -304,6 +286,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
@@ -317,7 +300,7 @@ public final class QualityGateBreakerTest {
 
     // No exception
 
-    new QualityGateBreaker(null, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(fileSystem, config).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
@@ -326,6 +309,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
@@ -340,7 +324,7 @@ public final class QualityGateBreakerTest {
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Project does not pass the quality gate.");
 
-    new QualityGateBreaker(null, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(fileSystem, config).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test
@@ -349,6 +333,7 @@ public final class QualityGateBreakerTest {
 
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
+    Configuration config = new ConfigurationBridge(settings);
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
@@ -362,7 +347,7 @@ public final class QualityGateBreakerTest {
 
     // No exception
 
-    new QualityGateBreaker(null, fileSystem, settings).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
+    new QualityGateBreaker(fileSystem, config).checkQualityGate(wsClient, TEST_ANALYSIS_ID);
   }
 
   @Test

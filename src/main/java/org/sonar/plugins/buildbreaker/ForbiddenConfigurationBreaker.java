@@ -24,7 +24,7 @@ import java.util.List;
 import org.sonar.api.batch.postjob.PostJob;
 import org.sonar.api.batch.postjob.PostJobContext;
 import org.sonar.api.batch.postjob.PostJobDescriptor;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -36,19 +36,14 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
 
   private static final Logger LOGGER = Loggers.get(ForbiddenConfigurationBreaker.class);
 
-  private final Settings settings;
+  private final Configuration config;
 
-  /**
-   * Constructor used to inject dependencies.
-   *
-   * @param settings the project settings
-   */
-  public ForbiddenConfigurationBreaker(Settings settings) {
-    this.settings = settings;
+  public ForbiddenConfigurationBreaker(Configuration config) {
+    this.config = config;
   }
 
   public boolean shouldExecuteOnProject() {
-    return settings.hasKey(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
+    return config.hasKey(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
   }
 
   @Override
@@ -59,7 +54,7 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
   @Override
   public void execute(PostJobContext context) {
     if (shouldExecuteOnProject()) {
-      String[] pairs = settings.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
+      String[] pairs = config.getStringArray(BuildBreakerPlugin.FORBIDDEN_CONF_KEY);
       for (String pair : pairs) {
         List<String> split = Splitter.on('=').limit(2).splitToList(pair);
         if (split.isEmpty()) {
@@ -67,7 +62,7 @@ public final class ForbiddenConfigurationBreaker implements PostJob {
         }
         String key = split.get(0);
         String value = split.size() > 1 ? split.get(1) : "";
-        if (value.equals(settings.getString(key))) {
+        if (value.equals(config.get(key).orElse(null))) {
           LOGGER.error("{} Forbidden configuration: {}", BuildBreakerPlugin.LOG_STAMP, pair);
           throw new IllegalStateException(
               "A forbidden configuration has been found on the project: " + pair);

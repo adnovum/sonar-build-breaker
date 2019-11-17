@@ -12,9 +12,9 @@ function start_sonar() {
 
     $BASEDIR/run_sonar_with_plugin.sh $sonar_ver '' > $RESULTDIR/${sonar_ver}_start_sonar.log 2>&1
     res=$?
-    if [ $res != 0 ]; then 
+    if [ $res != 0 ]; then
         echo "- Failed to start sonarqube $sonar_ver (exited with $res)";
-        docker log sonarqube > $RESULTDIR/${sonar_ver}_docker_err.log
+        docker logs sonarqube > $RESULTDIR/${sonar_ver}_docker_err.log
         exit 1;
     fi
 }
@@ -55,7 +55,7 @@ function test_sonar_version() {
     test_maven_project $sonar_ver failing-project 1
     check_maven_project_output $sonar_ver failing-project '\[BUILD BREAKER\] Project did not meet'
 
-    echo "sonarqube $sonar_ver OK" 
+    echo "sonarqube $sonar_ver OK"
     stop_sonar
 }
 

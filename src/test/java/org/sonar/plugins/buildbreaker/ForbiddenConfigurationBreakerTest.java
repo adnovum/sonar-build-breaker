@@ -24,7 +24,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.ConfigurationBridge;
 import org.sonar.api.config.internal.MapSettings;
 
 public final class ForbiddenConfigurationBreakerTest {
@@ -35,20 +37,25 @@ public final class ForbiddenConfigurationBreakerTest {
   public void testShouldExecuteSuccess() {
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
+    Configuration config = new ConfigurationBridge(settings);
 
-    assertEquals(true, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject());
+    assertEquals(true, new ForbiddenConfigurationBreaker(config).shouldExecuteOnProject());
   }
 
   @Test
   public void testShouldExecuteFailure() {
     Settings settings = new MapSettings();
+    Configuration config = new ConfigurationBridge(settings);
 
-    assertEquals(false, new ForbiddenConfigurationBreaker(settings).shouldExecuteOnProject());
+    assertEquals(false, new ForbiddenConfigurationBreaker(config).shouldExecuteOnProject());
   }
 
   @Test
   public void shouldNotFailWithoutAnyForbiddenConfSet() {
-    new ForbiddenConfigurationBreaker(new MapSettings()).shouldExecuteOnProject();
+    Settings settings = new MapSettings();
+    Configuration config = new ConfigurationBridge(settings);
+
+    new ForbiddenConfigurationBreaker(config).shouldExecuteOnProject();
     // no exception expected
   }
 
@@ -60,8 +67,9 @@ public final class ForbiddenConfigurationBreakerTest {
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
     settings.setProperty("foo", "bar");
+    Configuration config = new ConfigurationBridge(settings);
 
-    new ForbiddenConfigurationBreaker(settings).execute(null);
+    new ForbiddenConfigurationBreaker(config).execute(null);
   }
 
   @Test
@@ -69,8 +77,9 @@ public final class ForbiddenConfigurationBreakerTest {
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=bar,hello=world");
     settings.setProperty("foo", "other_value");
+    Configuration config = new ConfigurationBridge(settings);
 
-    new ForbiddenConfigurationBreaker(settings).execute(null);
+    new ForbiddenConfigurationBreaker(config).execute(null);
     // no exception expected
   }
 
@@ -82,7 +91,8 @@ public final class ForbiddenConfigurationBreakerTest {
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.FORBIDDEN_CONF_KEY, "foo=true");
     settings.setProperty("foo", true);
+    Configuration config = new ConfigurationBridge(settings);
 
-    new ForbiddenConfigurationBreaker(settings).execute(null);
+    new ForbiddenConfigurationBreaker(config).execute(null);
   }
 }

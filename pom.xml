@@ -3,12 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonarsource.parent</groupId>
-    <artifactId>parent</artifactId>
-    <version>26</version>
-  </parent>
-
   <groupId>org.sonarqubecommunity.buildbreaker</groupId>
   <artifactId>sonar-build-breaker-plugin</artifactId>
   <version>2.3-SNAPSHOT</version>
@@ -59,24 +53,23 @@
   <properties>
     <license.owner>${project.organization.name}</license.owner>
     <license.mailto>${project.organization.url}</license.mailto>
-    <sonar.version>7.3</sonar.version>
-    <sonar.pluginName>Build Breaker</sonar.pluginName>
+    <sonar.apiVersion>7.3</sonar.apiVersion>
+    <jdk.min.version>1.8</jdk.min.version>
+    <sonar.pluginKey>build-breaker</sonar.pluginKey>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
-    <!-- Last JDK 1.7 compatible packaging plugin version -->
-    <version.sonar-packaging.plugin>1.17</version.sonar-packaging.plugin>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <version>${sonar.version}</version>
+      <version>${sonar.apiVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-ws</artifactId>
-      <version>${sonar.version}</version>
+      <version>${sonar.apiVersion}</version>
     </dependency>
     <!-- unit tests -->
     <dependency>
@@ -95,30 +88,23 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.16</version>
+        <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+        <artifactId>sonar-packaging-maven-plugin</artifactId>
+        <version>1.18.0.372</version>
+        <extensions>true</extensions>
+        <configuration>
+          <pluginKey>${sonar.pluginKey}</pluginKey>
+          <pluginClass>${sonar.pluginClass}</pluginClass>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-java</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <!-- PowerMock doesn't like these versions http://stackoverflow.com/a/25428318 -->
-                  <version>[1.7.0,1.7.0-65),[1.7.0-75,)</version>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <source>${jdk.min.version}</source>
+          <target>${jdk.min.version}</target>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -140,26 +126,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagNameFormat>@{project.version}</tagNameFormat>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <useReleaseProfile>false</useReleaseProfile>
-          <localCheckout>true</localCheckout>
-          <pushChanges>false</pushChanges>
-          <mavenExecutorId>forked-path</mavenExecutorId>
-          <preparationGoals>clean install</preparationGoals>
-          <goals>clean install</goals>
-          <!--
-          Allows to activate release profile during release.
-          We don't use releaseProfiles parameter, because it affects only release:perform goal
-          -->
-          <arguments>-Prelease</arguments>
-        </configuration>
-      </plugin>
-
       <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
