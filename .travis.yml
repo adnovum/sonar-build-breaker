@@ -10,6 +10,11 @@ addons:
   sonarcloud:
     organization: sandro-h-github
 
+env:
+  global:
+    - GITHUB_API_KEY:
+        secure: dJpXH8dz+yJ1TW/O5t5Rx5jHbbt76Jk7sgmzQd2kE26BtfF2gByJao1WOSd1KQ3dfgDfB3T4uxTGdgKpGk0+yAlqhKgAvdk8X1pnzXHMYYJpCM1h2UjW/wuZMFTzBtlMitAaVVon+XimuBCCXKvb49DmMdndVtcXU8K4aCr5zFY=
+
 script:
   # Run this first, because verify builds the project and runs the auto-formatting.
   # But we want to detect commits that don't adhere to the format. E.g. if someone
@@ -17,6 +22,26 @@ script:
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -B -e -V
   - mvn sonar:sonar -Dsonar.projectKey=sandro-h_sonar-build-breaker
+
+before_deploy:
+  - git tag -f travis-pre-release
+  - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_API_KEY}@github.com/${TRAVIS_REPO_SLUG}.git
+  - git push -f gh travis-pre-release
+  - git remote remove gh
+deploy:
+  provider: releases
+  api_key:
+    secure: dJpXH8dz+yJ1TW/O5t5Rx5jHbbt76Jk7sgmzQd2kE26BtfF2gByJao1WOSd1KQ3dfgDfB3T4uxTGdgKpGk0+yAlqhKgAvdk8X1pnzXHMYYJpCM1h2UjW/wuZMFTzBtlMitAaVVon+XimuBCCXKvb49DmMdndVtcXU8K4aCr5zFY=
+  file_glob: true
+  file: target/sonar-build-breaker-plugin-*.jar
+  skip_cleanup: true
+  prerelease: true
+  overwrite: true
+  name: Travis Pre-Release Build
+  body: Automatic pre-release build of $TRAVIS_BRANCH ($TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
+  on:
+    repo: sandro-h/sonar-build-breaker
+    branch: 7_9_compat
 
 cache:
   directories:
