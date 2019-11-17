@@ -12,11 +12,11 @@ addons:
 
 env:
   global:
-    - GITHUB_API_KEY:
-        secure: dJpXH8dz+yJ1TW/O5t5Rx5jHbbt76Jk7sgmzQd2kE26BtfF2gByJao1WOSd1KQ3dfgDfB3T4uxTGdgKpGk0+yAlqhKgAvdk8X1pnzXHMYYJpCM1h2UjW/wuZMFTzBtlMitAaVVon+XimuBCCXKvb49DmMdndVtcXU8K4aCr5zFY=
+    - GITHUB_TOKEN:  &GITHUB_TOKEN
+        secure: "djo5iqoDyFU/Aa7hVrKPxuRJC/jwSZDll8KdJtaDN++VJ+iGLKBhSrJggUBXL54C7eCTjcodlSv+6K1owaflpqrfnJW3WkmmecHK0UTAT+ouYtyTHjIY7ltaBgM1pCrhGcqMgjYbPxJuxfl7lKP1ZiFRvA/kB0SoCvatfFtUxzI="
 
 script:
-  # Run this first, because verify builds the project and runs the auto-formatting.
+  # Run this first, because 'verify' builds the project and runs the auto-formatting.
   # But we want to detect commits that don't adhere to the format. E.g. if someone
   # makes last-minute code changes without rebuilding it locally (which would auto-format).
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
@@ -24,14 +24,10 @@ script:
   - mvn sonar:sonar -Dsonar.projectKey=sandro-h_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER
 
 before_deploy:
-  - git tag -f travis-pre-release
-  - git remote add gh https://${TRAVIS_REPO_SLUG%/*}:${GITHUB_API_KEY}@github.com/${TRAVIS_REPO_SLUG}.git
-  - git push -f gh travis-pre-release
-  - git remote remove gh
+  - .travis/prepare_pre_release.sh
 deploy:
   provider: releases
-  api_key:
-    secure: dJpXH8dz+yJ1TW/O5t5Rx5jHbbt76Jk7sgmzQd2kE26BtfF2gByJao1WOSd1KQ3dfgDfB3T4uxTGdgKpGk0+yAlqhKgAvdk8X1pnzXHMYYJpCM1h2UjW/wuZMFTzBtlMitAaVVon+XimuBCCXKvb49DmMdndVtcXU8K4aCr5zFY=
+  api_key: *GITHUB_TOKEN
   file_glob: true
   file: target/sonar-build-breaker-plugin-*.jar
   skip_cleanup: true
