@@ -6,9 +6,15 @@ dist: trusty
 jdk:
   - oraclejdk8
 
+branches:
+  except:
+    - travis-pre-release
+
 addons:
   sonarcloud:
-    organization: sandro-h-github
+    organization: adnovum
+    token:
+      secure: "OZAjVsFt2MICZns2lODx1O4306p9HtAk3Ojt3pxME6mMnRceVEIvMHaOzwzWYdidmwUKIWg7rFaMaPPkfJjW1bU8eDgWkqoBtikATOIlFoT+jI+5KHeujUj90ymqY4FAorTJpXLg4hpxmiqWYjNOy4rPh+/hu650yKKKZJ6P53c="
 
 env:
   global:
@@ -21,7 +27,7 @@ script:
   # makes last-minute code changes without rebuilding it locally (which would auto-format).
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
-  - mvn sonar:sonar -Dsonar.projectKey=sandro-h_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER
+  - mvn sonar:sonar -Dsonar.projectKey=adnovum_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
 
 before_deploy:
   - .travis/prepare_pre_release.sh
@@ -36,7 +42,7 @@ deploy:
   name: Travis Pre-Release Build
   body: Automatic pre-release build of $TRAVIS_BRANCH ($TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
   on:
-    repo: sandro-h/sonar-build-breaker
+    repo: adnovum/sonar-build-breaker
     # TODO: this should only run for master, once we merged the current changes.
     branch: 7_9_compat
 
