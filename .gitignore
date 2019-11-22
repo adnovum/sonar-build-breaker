@@ -31,3 +31,6 @@ Desktop.ini
 
 # ---- Misc
 verification/results
+
+# ---- AdNovum dev env
+config/
