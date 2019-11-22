@@ -43,8 +43,7 @@ deploy:
   body: Automatic pre-release build of $TRAVIS_BRANCH ($TRAVIS_COMMIT) built by Travis CI on $(date +'%F %T %Z').
   on:
     repo: adnovum/sonar-build-breaker
-    # TODO: this should only run for master, once we merged the current changes.
-    branch: 7_9_compat
+    branch: master
 
 cache:
   directories:
