@@ -88,7 +88,6 @@ waiting for review.  This project is maintained on a best-effort basis (aka duri
 2. For the most part, the project follows standard Oracle Java code conventions
 3. Include unit tests
    1. Do not use PowerMock unless there is no alternative
-   2. Keep project coverage above 90%
 4. Update the documentation (this `README.md`) with new configuration parameters and usage notes
 5. Make sure your change works with all versions of SonarQube starting at the minimum version
    defined in `pom.xml`
