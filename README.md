@@ -94,3 +94,4 @@ waiting for review.  This project is maintained on a best-effort basis (aka duri
    defined in `pom.xml`
    1. If you need to upgrade the base SonarQube version, create an issue for discussion first
    2. Once upgraded, the base version will not be downgraded
+test
