@@ -27,7 +27,7 @@ script:
   # makes last-minute code changes without rebuilding it locally (which would auto-format).
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
-  - mvn sonar:sonar -Dsonar.projectKey=adnovum_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn sonar:sonar -Dsonar.projectKey=adnovum_sonar-build-breaker DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V'
 
 before_deploy:
   - .travis/prepare_pre_release.sh
