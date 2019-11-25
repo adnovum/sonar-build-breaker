@@ -4,9 +4,10 @@
 # Usage: run_sonar_with_plugin.sh [sonarqube docker tag]
 set -euo pipefail
 BASEDIR=$(dirname "$0")
-PLUGIN_JAR=$(realpath $BASEDIR/../target/sonar-build-breaker-plugin-*.jar)
+DEV_PLUGIN_JAR=$(realpath $BASEDIR/../target/sonar-build-breaker-plugin-*.jar)
 TAG=${1:-lts}
 RM=${2:---rm}
+PLUGIN_JAR=$(realpath ${3:-$DEV_PLUGIN_JAR})
 
 echo "Starting sonarqube:$TAG and plugin $PLUGIN_JAR"
 docker run -d $RM --name sonarqube -p 9000:9000 \
