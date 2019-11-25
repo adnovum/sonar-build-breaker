@@ -1,10 +1,14 @@
 # Verification
 
-This folder contains dummy maven projects to verify end-to-end functionality of the sonar-build-breaker plugin.
+This folder contains dummy maven projects and bash scripts to verify end-to-end functionality of the sonar-build-breaker plugin.
+
+## Prerequisites
+- Docker - the scripts run SonarQube as docker containers
+- A bash shell - a given on Linux systems, but you can also use git bash on Windows.
 
 ## Semi-automatic verification
 
-Can be used to test against a particular sonarqube version
+Can be used to test against a particular SonarQube version
 and debug problems.
 
 Verification steps:

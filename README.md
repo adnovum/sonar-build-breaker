@@ -79,8 +79,7 @@ Gallio skipped will be marked "broken".
 
 When reporting issues, please include complete steps to reproduce the issue and all relevant logs.
 
-Pull requests are welcome, but may not always be reviewed immediately.  Please be patient while
-waiting for review.  This project is maintained on a best-effort basis (aka during spare time).
+Pull requests are welcome, but may not always be reviewed immediately. We try our best to respond within a couple of days.
 
 ### Pull Request Guidelines
 
@@ -91,5 +90,6 @@ waiting for review.  This project is maintained on a best-effort basis (aka duri
 4. Update the documentation (this `README.md`) with new configuration parameters and usage notes
 5. Make sure your change works with all versions of SonarQube starting at the minimum version
    defined in `pom.xml`
-   1. If you need to upgrade the base SonarQube version, create an issue for discussion first
-   2. Once upgraded, the base version will not be downgraded
+   1. You can use the scripts in the `verification` folder to check compatibility. See the [verification/README.md](verification/README.md) for details.
+   2. If you need to upgrade the base SonarQube version, create an issue for discussion first
+   3. Once upgraded, the base version will not be downgraded
