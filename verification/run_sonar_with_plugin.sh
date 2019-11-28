@@ -4,10 +4,10 @@
 # Usage: run_sonar_with_plugin.sh [sonarqube docker tag]
 set -euo pipefail
 BASEDIR=$(dirname "$0")
-DEV_PLUGIN_JAR=$(realpath $BASEDIR/../target/sonar-build-breaker-plugin-*.jar)
+DEV_PLUGIN_JAR=$(readlink -f $BASEDIR/../target/sonar-build-breaker-plugin-*.jar)
 TAG=${1:-lts}
 RM=${2:---rm}
-PLUGIN_JAR=$(realpath ${3:-$DEV_PLUGIN_JAR})
+PLUGIN_JAR=$(readlink -f ${3:-$DEV_PLUGIN_JAR})
 
 echo "Starting sonarqube:$TAG and plugin $PLUGIN_JAR"
 docker run -d $RM --name sonarqube -p 9000:9000 \
@@ -17,7 +17,7 @@ docker run -d $RM --name sonarqube -p 9000:9000 \
 # Create a custom quality gate which breaks on any vulnerability issues, not just in new code.
 # If we don't use this, our dummy projects won't break unless we analyze them, then add issues manually, then reanalyze them.
 gateId=2
-docker exec -i sonarqube bash <<-EOF
+timeout 5m docker exec -i sonarqube bash <<-EOF
     while [[ "\$(curl -s -o /dev/null -w '%{http_code}' localhost:9000/api/qualitygates/list)" != "200" ]]; do 
         echo "Waiting for Sonarqube..."
         sleep 3

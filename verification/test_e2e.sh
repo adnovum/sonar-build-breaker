@@ -4,7 +4,15 @@
 # that the expected build breaker behavior is met.
 # Usage: ./test_e2e [space-separated list of versions]
 BASEDIR=$(dirname "$0")
-RESULTDIR=$(realpath $BASEDIR/results)
+RESULTDIR=$(readlink -f $BASEDIR/results)
+
+function print_error_log_if_ci() {
+    log_file=$1
+    if [ "$CI" = "true" ]; then
+        echo "$log_file:"
+        cat $log_file
+    fi
+}
 
 function start_sonar() {
     sonar_ver=$1
@@ -15,6 +23,7 @@ function start_sonar() {
     if [ $res != 0 ]; then
         echo "- Failed to start sonarqube $sonar_ver (exited with $res)";
         docker logs sonarqube > $RESULTDIR/${sonar_ver}_docker_err.log
+        print_error_log_if_ci $RESULTDIR/${sonar_ver}_docker_err.log
         exit 1;
     fi
 }
@@ -29,10 +38,14 @@ function test_maven_project() {
     expected_exit_code=$3
 
     echo "- Running $project against sonarqube $sonar_ver..."
-    pushd $project > /dev/null
+    pushd $BASEDIR/$project > /dev/null
     mvn sonar:sonar > $RESULTDIR/${sonar_ver}_${project}.log 2>&1
     res=$?
-    if [ $res != $expected_exit_code ]; then echo "- Expected sonar analysis of $project to exit with $expected_exit_code (exited with $res)"; exit 1; fi
+    if [ $res != $expected_exit_code ]; then 
+        echo "- Expected sonar analysis of $project to exit with $expected_exit_code (exited with $res)"
+        print_error_log_if_ci $RESULTDIR/${sonar_ver}_${project}.log
+        exit 1
+    fi
     popd > /dev/null
 }
 
@@ -42,7 +55,11 @@ function check_maven_project_output() {
     expected_line=$3
     grep "$expected_line" $RESULTDIR/${sonar_ver}_${project}.log > /dev/null
     res=$?
-    if [ $res != 0 ]; then echo "- Expected '$expected_line' in $project output."; exit 1; fi
+    if [ $res != 0 ]; then 
+        echo "- Expected '$expected_line' in $project output."
+        print_error_log_if_ci $RESULTDIR/${sonar_ver}_${project}.log
+        exit 1
+    fi
 }
 
 function test_sonar_version() {

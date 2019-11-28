@@ -5,21 +5,21 @@ install: true
 dist: trusty
 jdk:
   - oraclejdk8
+services:
+  - docker
 
 branches:
   except:
     - travis-pre-release
 
-addons:
-  sonarcloud:
-    organization: adnovum
-    token:
-      secure: "OZAjVsFt2MICZns2lODx1O4306p9HtAk3Ojt3pxME6mMnRceVEIvMHaOzwzWYdidmwUKIWg7rFaMaPPkfJjW1bU8eDgWkqoBtikATOIlFoT+jI+5KHeujUj90ymqY4FAorTJpXLg4hpxmiqWYjNOy4rPh+/hu650yKKKZJ6P53c="
-
 env:
   global:
     - GITHUB_TOKEN:  &GITHUB_TOKEN
         secure: "djo5iqoDyFU/Aa7hVrKPxuRJC/jwSZDll8KdJtaDN++VJ+iGLKBhSrJggUBXL54C7eCTjcodlSv+6K1owaflpqrfnJW3WkmmecHK0UTAT+ouYtyTHjIY7ltaBgM1pCrhGcqMgjYbPxJuxfl7lKP1ZiFRvA/kB0SoCvatfFtUxzI="
+    # If this was called SONAR_TOKEN, it would be used by the sonar scanner automatically. Unfortunately, that also goes for the end-to-end test where we do not want to use this token.
+    # Note for this reason we cannot use the sonarcloud addon either.
+    - SONAR_CLOUD_TOKEN:
+        secure: "OZAjVsFt2MICZns2lODx1O4306p9HtAk3Ojt3pxME6mMnRceVEIvMHaOzwzWYdidmwUKIWg7rFaMaPPkfJjW1bU8eDgWkqoBtikATOIlFoT+jI+5KHeujUj90ymqY4FAorTJpXLg4hpxmiqWYjNOy4rPh+/hu650yKKKZJ6P53c="
 
 script:
   # Run this first, because 'verify' builds the project and runs the auto-formatting.
@@ -27,7 +27,8 @@ script:
   # makes last-minute code changes without rebuilding it locally (which would auto-format).
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
-  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn sonar:sonar -Dsonar.projectKey=adnovum_sonar-build-breaker DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn sonar:sonar -Dsonar.branch.name=$TRAVIS_BRANCH -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_CLOUD_TOKEN -Dsonar.organization=adnovum -Dsonar.projectKey=adnovum_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V; fi'
+  - verification/test_e2e.sh 7.9-community
 
 before_deploy:
   - .travis/prepare_pre_release.sh
@@ -48,6 +49,3 @@ deploy:
 cache:
   directories:
     - '$HOME/.m2/repository'
-
-notifications:
-  email: false
