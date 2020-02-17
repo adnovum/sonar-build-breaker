@@ -12,11 +12,11 @@
 | 5.2               | Not compatible due to limitations with SonarQube platform |
 | 5.3 - 5.4         | 2.0, 2.1, 2.2 |
 | 5.5 - 7.2         | 2.1, 2.2 |
-| 7.3 - 7.9         | 2.3 |
+| 7.3 - 8.1         | 2.3, 2.3.1 |
 
 ## Download and Installation
 
-1. Download the appropriate `sonar-build-breaker-plugin-${version}.jar` file from the [releases page](https://github.com/SonarQubeCommunity/sonar-build-breaker/releases), based on the compatibility chart
+1. Download the appropriate `sonar-build-breaker-plugin-${version}.jar` file from the [releases page](https://github.com/adnovum/sonar-build-breaker/releases), based on the compatibility chart
 2. Copy the plugin into `/path/to/sonarqube/extensions/plugins/`
 3. Remove older versions of the plugin from `/path/to/sonarqube/extensions/plugins/`, if present
 4. Restart SonarQube

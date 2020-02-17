@@ -81,7 +81,7 @@ rm -rf $RESULTDIR
 mkdir -p $RESULTDIR
 versions=$@
 if [ -z "$versions" ]; then
-    versions="7.9-community 7.8-community 7.7-community 7.6-community 7.5-community 7.4-community 7.3-community"
+    versions="8.1-community-beta 8.0-community-beta 7.9-community 7.8-community 7.7-community 7.6-community 7.5-community 7.4-community 7.3-community"
 fi
 
 for ver in $versions; do

@@ -28,7 +28,7 @@ script:
   - mvn com.coveo:fmt-maven-plugin:check -B -e -V
   - mvn verify -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then mvn sonar:sonar -Dsonar.branch.name=$TRAVIS_BRANCH -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_CLOUD_TOKEN -Dsonar.organization=adnovum -Dsonar.projectKey=adnovum_sonar-build-breaker -DbuildVersion=$TRAVIS_BUILD_NUMBER -B -e -V; fi'
-  - verification/test_e2e.sh 7.9-community
+  - verification/test_e2e.sh 7.9-community 8-community-beta
 
 before_deploy:
   - .travis/prepare_pre_release.sh
