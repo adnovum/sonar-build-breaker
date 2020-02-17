@@ -8,17 +8,21 @@
   <version>${baseVersion}.${buildVersion}</version>
   <packaging>sonar-plugin</packaging>
 
-  <name>SonarQube Build Breaker Plugin</name>
+  <name>Build Breaker</name>
   <description>Break the analyzer if the project does not pass its Quality Gate</description>
-  <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
+  <url>https://github.com/adnovum/sonar-build-breaker</url>
   <inceptionYear>2009</inceptionYear>
 
   <organization>
-    <name>Matthew DeTullio and contributors</name>
-    <url>mailto:sonarqube@googlegroups.com</url>
+    <name>AdNovum Informatik AG, Matthew DeTullio, and contributors</name>
+    <url>https://github.com/adnovum/sonar-build-breaker/graphs/contributors</url>
   </organization>
 
   <developers>
+    <developer>
+      <id>adnovum</id>
+      <name>AdNovum Informatik AG</name>
+    </developer>
     <developer>
       <id>mjdetullio</id>
       <name>Matthew DeTullio</name>
@@ -34,20 +38,20 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</connection>
-    <developerConnection>scm:git:git@github.com:SonarQubeCommunity/sonar-build-breaker.git</developerConnection>
-    <url>https://github.com/SonarQubeCommunity/sonar-build-breaker</url>
+    <connection>scm:git:git@github.com:adnovum/sonar-build-breaker.git</connection>
+    <developerConnection>scm:git:git@github.com:adnovum/sonar-build-breaker.git</developerConnection>
+    <url>https://github.com/adnovum/sonar-build-breaker</url>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/SonarQubeCommunity/sonar-build-breaker/issues</url>
+    <url>https://github.com/adnovum/sonar-build-breaker/issues</url>
   </issueManagement>
 
   <ciManagement>
     <system>Travis</system>
-    <url>https://travis-ci.org/SonarQubeCommunity/sonar-build-breaker</url>
+    <url>https://travis-ci.com/adnovum/sonar-build-breaker</url>
   </ciManagement>
 
   <properties>
@@ -55,10 +59,10 @@
     <license.mailto>${project.organization.url}</license.mailto>
     <sonar.apiVersion>7.3</sonar.apiVersion>
     <jdk.min.version>1.8</jdk.min.version>
-    <sonar.pluginKey>build-breaker</sonar.pluginKey>
+    <sonar.pluginKey>buildbreaker</sonar.pluginKey>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
     <sonar.pluginDisplayVersion>${baseVersion} (build ${buildVersion})</sonar.pluginDisplayVersion>
-    <baseVersion>2.3.0</baseVersion>
+    <baseVersion>2.3.1</baseVersion>
     <buildVersion>0-SNAPSHOT</buildVersion>
   </properties>
 
