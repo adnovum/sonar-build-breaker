@@ -57,6 +57,8 @@ public final class QualityGateBreaker implements PostJob {
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
+  static final String METADATA_FILE_PATH_KEY = "sonar.scanner.metadataFilePath";
+
   private final FileSystem fileSystem;
   private final Configuration config;
 
@@ -143,11 +145,12 @@ public final class QualityGateBreaker implements PostJob {
     }
   }
 
-  private Properties loadReportTaskProps() {
-    File reportTaskFile = new File(fileSystem.workDir(), "report-task.txt");
+  @VisibleForTesting
+  Properties loadReportTaskProps() {
+    File reportTaskFile = getReportTaskFile();
+    LOGGER.debug("Loading report task properties from {}", reportTaskFile.getAbsolutePath());
 
     Properties reportTaskProps = new Properties();
-
     try {
       reportTaskProps.load(Files.newReader(reportTaskFile, StandardCharsets.UTF_8));
     } catch (IOException e) {
@@ -155,6 +158,15 @@ public final class QualityGateBreaker implements PostJob {
     }
 
     return reportTaskProps;
+  }
+
+  private File getReportTaskFile() {
+    // Note: Sonar requires metadataFilePath to point to an absolute file path, so we can convert
+    // directly to a file.
+    return config
+        .get(METADATA_FILE_PATH_KEY)
+        .map(File::new)
+        .orElseGet(() -> new File(fileSystem.workDir(), "report-task.txt"));
   }
 
   @VisibleForTesting

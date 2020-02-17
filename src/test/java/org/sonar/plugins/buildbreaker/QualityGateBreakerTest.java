@@ -21,17 +21,22 @@ package org.sonar.plugins.buildbreaker;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -65,9 +70,16 @@ public final class QualityGateBreakerTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();
 
+  @Mock FileSystem fileSystem;
+
+  @Before
+  public void setup() {
+    when(fileSystem.workDir())
+        .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
+  }
+
   @Test
   public void testShouldExecuteSuccess() {
-    FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
     Configuration config = new ConfigurationBridge(settings);
@@ -79,7 +91,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testShouldExecuteDisabledFromSkipSetting() {
-    FileSystem fileSystem = mock(FileSystem.class);
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
     Configuration config = new ConfigurationBridge(settings);
@@ -90,8 +101,29 @@ public final class QualityGateBreakerTest {
   }
 
   @Test
+  public void testLoadReportTaskTxtFile() {
+    Settings settings = new MapSettings();
+    Configuration config = new ConfigurationBridge(settings);
+
+    Properties reportTaskProps = new QualityGateBreaker(fileSystem, config).loadReportTaskProps();
+    assertEquals("AVKJ_h9DIK5ABR5tIoQ_", reportTaskProps.getProperty("ceTaskId"));
+  }
+
+  @Test
+  public void testLoadReportTaskTxtFileFromMetadataFilePath() {
+    Settings settings = new MapSettings();
+    settings.setProperty(
+        QualityGateBreaker.METADATA_FILE_PATH_KEY,
+        "src/test/resources/org/sonar/plugins/buildbreaker/alternative-report-task.txt");
+    Configuration config = new ConfigurationBridge(settings);
+
+    Properties reportTaskProps = new QualityGateBreaker(fileSystem, config).loadReportTaskProps();
+    assertEquals("AXBTzuDyxOk5_RWMXCjJ", reportTaskProps.getProperty("ceTaskId"));
+  }
+
+  @Test
   public void testNoReportTaskTxtFile() {
-    FileSystem fileSystem = mock(FileSystem.class);
+    when(fileSystem.workDir()).thenReturn(new File("src/test/resources"));
     Settings settings = new MapSettings();
     Configuration config = new ConfigurationBridge(settings);
 
@@ -108,10 +140,6 @@ public final class QualityGateBreakerTest {
    */
   @Test
   public void testQueryMaxAttemptsReached() {
-    FileSystem fileSystem = mock(FileSystem.class);
-    when(fileSystem.workDir())
-        .thenReturn(new File("src/test/resources/org/sonar/plugins/buildbreaker"));
-
     Settings settings = new MapSettings();
     Configuration config = new ConfigurationBridge(settings);
 
@@ -123,8 +151,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryInProgressStatus() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -150,8 +176,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryPendingStatus() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -177,8 +201,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryFailedStatus() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -204,8 +226,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryCanceledStatus() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -231,8 +251,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQuerySuccessStatus() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -258,8 +276,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryIOException() throws IOException {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -282,8 +298,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusWarning() {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -305,8 +319,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusError() {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);
@@ -329,8 +341,6 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusOk() {
-    FileSystem fileSystem = mock(FileSystem.class);
-
     Settings settings = new MapSettings();
     settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
     Configuration config = new ConfigurationBridge(settings);

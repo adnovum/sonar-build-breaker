@@ -29,16 +29,17 @@ SonarQube.
 
 Upon uploading the analysis information, the plugin follows the below workflow to check the quality gate:
 
-1. Search `${sonar.working.directory}/report-task.txt` for `ceTaskId`, the server-side Compute Engine (CE) task associated with the current analysis
+1. Search `${sonar.working.directory}/report-task.txt` for `ceTaskId`, the server-side Compute Engine (CE) task associated with the current analysis.
+    1. If the project configures `sonar.scanner.metadataFilePath`, that file is used instead of `${sonar.working.directory}/report-task.txt`
 2. Call the `${sonar.host.url}/api/ce/task?id=${ceTaskId}` web service to retrieve `analysisId`
-  1. If the CE Task Status is `PENDING` or `IN_PROGRESS`, wait `sonar.buildbreaker.queryInterval` and repeat step 2
-  2. If the CE Task Status is `SUCCESS`, save the `analysisId` and proceed to step 3
-  3. If the CE Task Status is `FAILED` or none of the above, break the build
-  4. If step 2 has been attempted `sonar.buildbreaker.queryMaxAttempts` times, break the build
+    1. If the CE Task Status is `PENDING` or `IN_PROGRESS`, wait `sonar.buildbreaker.queryInterval` and repeat step 2
+    2. If the CE Task Status is `SUCCESS`, save the `analysisId` and proceed to step 3
+    3. If the CE Task Status is `FAILED` or none of the above, break the build
+    4. If step 2 has been attempted `sonar.buildbreaker.queryMaxAttempts` times, break the build
 3. Call the `${sonar.host.url}/api/qualitygates/project_status?analysisId=${analysisId}` web service to check the status of the quality gate
-  1. If the quality gate status is `OK`, allow the build to pass
-  2. If the quality gate status is `WARN`, allow the build to pass and log the current warnings
-  3. If the quality gate status is `ERROR`, break the build and log the current warnings and errors
+    1. If the quality gate status is `OK`, allow the build to pass
+    2. If the quality gate status is `WARN`, allow the build to pass and log the current warnings
+    3. If the quality gate status is `ERROR`, break the build and log the current warnings and errors
 
 The build "break" is accomplished by throwing an exception, making the analysis return with a non-zero status code.
 This allows you to benefit from the notifications built into CI engines or use your own custom notifications that check the
@@ -50,10 +51,10 @@ exit status.
 
 1. Associate a quality gate to your project
 2. Optional: Tune `sonar.buildbreaker.queryMaxAttempts` and/or `sonar.buildbreaker.queryInterval`
-  1. Check the duration of previous CE (background) tasks for your project, from submission until completion
-  2. Ensure `sonar.buildbreaker.queryMaxAttempts * sonar.buildbreaker.queryInterval` is longer than the above duration (with default values, total wait time is ~5 minutes)
-  3. For small projects, a faster interval may be desired so your build times are not longer than necessary
-  4. For very large projects or servers with a busy CE queue, more attempts or a longer interval may be necessary
+    1. Check the duration of previous CE (background) tasks for your project, from submission until completion
+    2. Ensure `sonar.buildbreaker.queryMaxAttempts * sonar.buildbreaker.queryInterval` is longer than the above duration (with default values, total wait time is ~5 minutes)
+    3. For small projects, a faster interval may be desired so your build times are not longer than necessary
+    4. For very large projects or servers with a busy CE queue, more attempts or a longer interval may be necessary
 3. Run an analysis on your project
 4. If analysis fails while waiting for CE to complete, increase either `sonar.buildbreaker.queryMaxAttempts`, `sonar.buildbreaker.queryInterval`, or both
 
@@ -96,10 +97,10 @@ Pull requests are welcome, but may not always be reviewed immediately. We try ou
 1. This project uses [google-java-format](https://github.com/google/google-java-format). The code is auto-formatted whenever you build it.
 2. For the most part, the project follows standard Oracle Java code conventions
 3. Include unit tests
-   1. Do not use PowerMock unless there is no alternative
+    1. Do not use PowerMock unless there is no alternative
 4. Update the documentation (this `README.md`) with new configuration parameters and usage notes
 5. Make sure your change works with all versions of SonarQube starting at the minimum version
    defined in `pom.xml`
-   1. You can use the scripts in the `verification` folder to check compatibility. See the [verification/README.md](verification/README.md) for details.
-   2. If you need to upgrade the base SonarQube version, create an issue for discussion first
-   3. Once upgraded, the base version will not be downgraded
+    1. You can use the scripts in the `verification` folder to check compatibility. See the [verification/README.md](verification/README.md) for details.
+    2. If you need to upgrade the base SonarQube version, create an issue for discussion first
+    3. Once upgraded, the base version will not be downgraded
