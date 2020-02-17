@@ -75,6 +75,16 @@ Gallio skipped will be marked "broken".
 | `sonar.buildbreaker.forbiddenConf` | Comma-separated list of `key=value` pairs that should break the build. | | `sonar.gallio.mode=skip` |
 | `sonar.buildbreaker.alternativeServerUrl` | URL to use for web service requests. If unset, uses the `serverUrl` property from `${sonar.working.directory}/report-task.txt`. | | |
 
+### Authentication
+
+If your SonarQube instance does not allow anonymous analyses, i.e. you're passing `sonar.login` to your analysis command,
+you must make sure that the analysis user has one of the following permissions on the project:
+* 'Administer System'
+* or 'Administer' on the specified project
+* or 'Browse' on the specified project
+
+This is required so the plugin can call the `api/qualitygates/project_status` web service.
+
 ## Contributing
 
 When reporting issues, please include complete steps to reproduce the issue and all relevant logs.
