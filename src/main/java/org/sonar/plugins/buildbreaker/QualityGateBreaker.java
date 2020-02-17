@@ -46,7 +46,12 @@ import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Comparator;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Condition;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.ProjectStatus;
 import org.sonarqube.ws.Qualitygates.ProjectStatusResponse.Status;
-import org.sonarqube.ws.client.*;
+import org.sonarqube.ws.client.GetRequest;
+import org.sonarqube.ws.client.HttpConnector;
+import org.sonarqube.ws.client.WsClient;
+import org.sonarqube.ws.client.WsClientFactories;
+import org.sonarqube.ws.client.WsRequest;
+import org.sonarqube.ws.client.WsResponse;
 import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
 
 /**
@@ -186,7 +191,8 @@ public final class QualityGateBreaker implements PostJob {
             throw new IllegalStateException(
                 "Report processing did not complete successfully: " + taskStatus);
         }
-      } catch (IOException | InterruptedException e) {
+      } catch (IOException | InterruptedException e) { // NOSONAR: We have to treat a premature
+        // interrupt as a failure since we couldn't retrieve the analysis id (java:S2142)
         throw new IllegalStateException(e.getMessage(), e);
       }
     }

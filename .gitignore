@@ -6,7 +6,8 @@ dependency-reduced-pom.xml
 *.iws
 *.iml
 *.ipr
-.idea/
+.idea/*
+!.idea/codeStyles
 
 # ---- Eclipse
 .classpath
