@@ -163,6 +163,8 @@ public final class QualityGateBreaker implements PostJob {
   }
 
   @VisibleForTesting
+  // We have to treat a premature interrupt as a failure since we couldn't retrieve the analysis id.
+  @SuppressWarnings("squid:S2142")
   String getAnalysisId(WsClient wsClient, String ceTaskId) {
     WsRequest ceTaskRequest =
         new GetRequest("api/ce/task").setParam("id", ceTaskId).setMediaType(MediaTypes.PROTOBUF);
@@ -191,8 +193,7 @@ public final class QualityGateBreaker implements PostJob {
             throw new IllegalStateException(
                 "Report processing did not complete successfully: " + taskStatus);
         }
-      } catch (IOException | InterruptedException e) { // NOSONAR: We have to treat a premature
-        // interrupt as a failure since we couldn't retrieve the analysis id (java:S2142)
+      } catch (IOException | InterruptedException e) {
         throw new IllegalStateException(e.getMessage(), e);
       }
     }
