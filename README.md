@@ -20,6 +20,8 @@
 
 The easiest way to install the plugin is via the marketplace in your SonarQube administration settings. Just search for `Build Breaker`.
 
+Note: only version `2.3.1` and higher are available in the marketplace.
+
 ### Manual installation
 
 1. Download the appropriate `sonar-build-breaker-plugin-${version}.jar` file from the [releases page](https://github.com/adnovum/sonar-build-breaker/releases), based on the compatibility chart
