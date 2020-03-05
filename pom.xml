@@ -9,7 +9,7 @@
   <packaging>sonar-plugin</packaging>
 
   <name>Build Breaker</name>
-  <description>Break the analyzer if the project does not pass its Quality Gate</description>
+  <description>Fails the analysis if the project does not pass its Quality Gate</description>
   <url>https://github.com/adnovum/sonar-build-breaker</url>
   <inceptionYear>2009</inceptionYear>
 

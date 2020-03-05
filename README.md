@@ -14,7 +14,13 @@
 | 5.5 - 7.2         | 2.1, 2.2 |
 | 7.3 - 8.1         | 2.3, 2.3.1 |
 
-## Download and Installation
+## Installation
+
+### Marketplace
+
+The easiest way to install the plugin is via the marketplace in your SonarQube administration settings. Just search for `Build Breaker`.
+
+### Manual installation
 
 1. Download the appropriate `sonar-build-breaker-plugin-${version}.jar` file from the [releases page](https://github.com/adnovum/sonar-build-breaker/releases), based on the compatibility chart
 2. Copy the plugin into `/path/to/sonarqube/extensions/plugins/`
