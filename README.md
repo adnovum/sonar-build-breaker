@@ -20,7 +20,7 @@
 
 The easiest way to install the plugin is via the marketplace in your SonarQube administration settings. Just search for `Build Breaker`.
 
-Note: only version `2.3.1` and higher are available in the marketplace.
+Note: only version `2.3.1` and higher are available in the marketplace. Due to marketplace requirements, it can only be installed on Sonarqube 7.9+. You can still manually install it on older versions, as per table above.
 
 ### Manual installation
 
