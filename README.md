@@ -12,7 +12,7 @@
 | 5.2               | Not compatible due to limitations with SonarQube platform |
 | 5.3 - 5.4         | 2.0, 2.1, 2.2 |
 | 5.5 - 7.2         | 2.1, 2.2 |
-| 7.3 - 8.1         | 2.3, 2.3.1 |
+| 7.3 - 8.4         | 2.3, 2.3.1 |
 
 ## Installation
 
