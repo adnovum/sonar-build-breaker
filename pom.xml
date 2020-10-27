@@ -57,12 +57,12 @@
   <properties>
     <license.owner>${project.organization.name}</license.owner>
     <license.mailto>${project.organization.url}</license.mailto>
-    <sonar.apiVersion>7.3</sonar.apiVersion>
+    <sonar.apiVersion>8.3.1.34397</sonar.apiVersion>
     <jdk.min.version>1.8</jdk.min.version>
     <sonar.pluginKey>buildbreaker</sonar.pluginKey>
     <sonar.pluginClass>org.sonar.plugins.buildbreaker.BuildBreakerPlugin</sonar.pluginClass>
     <sonar.pluginDisplayVersion>${baseVersion} (build ${buildVersion})</sonar.pluginDisplayVersion>
-    <baseVersion>2.3.1</baseVersion>
+    <baseVersion>2.3.2</baseVersion>
     <buildVersion>0-SNAPSHOT</buildVersion>
   </properties>
 
@@ -77,6 +77,33 @@
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-ws</artifactId>
       <version>${sonar.apiVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>28.2-jre</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.errorprone</groupId>
+          <artifactId>error_prone_annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>listenablefuture</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.j2objc</groupId>
+          <artifactId>j2objc-annotations</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.checkerframework</groupId>
+          <artifactId>checker-qual</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>animal-sniffer-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- unit tests -->
     <dependency>

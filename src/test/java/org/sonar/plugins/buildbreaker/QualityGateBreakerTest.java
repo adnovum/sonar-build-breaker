@@ -42,10 +42,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.config.Settings;
-import org.sonar.api.config.internal.ConfigurationBridge;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonarqube.ws.Ce.Task;
 import org.sonarqube.ws.Ce.TaskResponse;
 import org.sonarqube.ws.Ce.TaskStatus;
@@ -80,9 +76,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testShouldExecuteSuccess() {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.SKIP_KEY, false);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.SKIP_KEY, "false");
 
     // No exception
 
@@ -91,9 +86,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testShouldExecuteDisabledFromSkipSetting() {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.SKIP_KEY, true);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.SKIP_KEY, "true");
 
     // No exception
 
@@ -102,8 +96,7 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testLoadReportTaskTxtFile() {
-    Settings settings = new MapSettings();
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
 
     Properties reportTaskProps = new QualityGateBreaker(fileSystem, config).loadReportTaskProps();
     assertEquals("AVKJ_h9DIK5ABR5tIoQ_", reportTaskProps.getProperty("ceTaskId"));
@@ -111,11 +104,10 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testLoadReportTaskTxtFileFromMetadataFilePath() {
-    Settings settings = new MapSettings();
-    settings.setProperty(
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(
         QualityGateBreaker.METADATA_FILE_PATH_KEY,
         "src/test/resources/org/sonar/plugins/buildbreaker/alternative-report-task.txt");
-    Configuration config = new ConfigurationBridge(settings);
 
     Properties reportTaskProps = new QualityGateBreaker(fileSystem, config).loadReportTaskProps();
     assertEquals("AXBTzuDyxOk5_RWMXCjJ", reportTaskProps.getProperty("ceTaskId"));
@@ -124,8 +116,7 @@ public final class QualityGateBreakerTest {
   @Test
   public void testNoReportTaskTxtFile() {
     when(fileSystem.workDir()).thenReturn(new File("src/test/resources"));
-    Settings settings = new MapSettings();
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
 
     thrown.expect(IllegalStateException.class);
     thrown.expectCause(isA(IOException.class));
@@ -140,8 +131,7 @@ public final class QualityGateBreakerTest {
    */
   @Test
   public void testQueryMaxAttemptsReached() {
-    Settings settings = new MapSettings();
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
 
     thrown.expect(IllegalStateException.class);
     thrown.expectMessage("Report processing is taking longer than the configured wait limit.");
@@ -151,9 +141,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryInProgressStatus() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -176,9 +165,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryPendingStatus() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -201,9 +189,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryFailedStatus() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -226,9 +213,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryCanceledStatus() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -251,9 +237,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQuerySuccessStatus() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -276,9 +261,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testSingleQueryIOException() throws IOException {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     WsConnector wsConnector = mock(WsConnector.class);
@@ -298,9 +282,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusWarning() {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
@@ -319,9 +302,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusError() {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
@@ -341,9 +323,8 @@ public final class QualityGateBreakerTest {
 
   @Test
   public void testQualityGateStatusOk() {
-    Settings settings = new MapSettings();
-    settings.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, 1);
-    Configuration config = new ConfigurationBridge(settings);
+    TestConfiguration config = new TestConfiguration();
+    config.setProperty(BuildBreakerPlugin.QUERY_MAX_ATTEMPTS_KEY, "1");
 
     WsClient wsClient = mock(WsClient.class);
     QualitygatesService qualityGatesService = mock(QualitygatesService.class);
