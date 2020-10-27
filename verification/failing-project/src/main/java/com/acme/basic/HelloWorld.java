@@ -2,11 +2,10 @@ package com.acme.basic;
 
 public class HelloWorld {
 
-  // Cause bad issues on purpose so project fails Quality Gate and triggers the build breaker.
-  public static final String Deliberate__BadlyFormattedPasswordVar = "dummypassword";
-
   void sayHello() {
     System.out.println("Hello World!");
+    // Deliberate bug (java:S1217) so project fails Quality Gate and triggers the build breaker.
+    new Thread().run();
   }
 
   void notCovered() {

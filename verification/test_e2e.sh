@@ -41,7 +41,7 @@ function test_maven_project() {
     pushd $BASEDIR/$project > /dev/null
     mvn sonar:sonar > $RESULTDIR/${sonar_ver}_${project}.log 2>&1
     res=$?
-    if [ $res != $expected_exit_code ]; then 
+    if [ $res != $expected_exit_code ]; then
         echo "- Expected sonar analysis of $project to exit with $expected_exit_code (exited with $res)"
         print_error_log_if_ci $RESULTDIR/${sonar_ver}_${project}.log
         exit 1
@@ -55,7 +55,7 @@ function check_maven_project_output() {
     expected_line=$3
     grep "$expected_line" $RESULTDIR/${sonar_ver}_${project}.log > /dev/null
     res=$?
-    if [ $res != 0 ]; then 
+    if [ $res != 0 ]; then
         echo "- Expected '$expected_line' in $project output."
         print_error_log_if_ci $RESULTDIR/${sonar_ver}_${project}.log
         exit 1
@@ -81,7 +81,7 @@ rm -rf $RESULTDIR
 mkdir -p $RESULTDIR
 versions=$@
 if [ -z "$versions" ]; then
-    versions="8.1-community-beta 8.0-community-beta 7.9-community 7.8-community 7.7-community 7.6-community 7.5-community 7.4-community 7.3-community"
+    versions="8.5-community 8.4-community 8.3-community 8.2-community 8.1-community-beta 8.0-community-beta lts"
 fi
 
 for ver in $versions; do

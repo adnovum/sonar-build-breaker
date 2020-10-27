@@ -18,11 +18,25 @@ docker run -d $RM --name sonarqube -p 9000:9000 \
 # If we don't use this, our dummy projects won't break unless we analyze them, then add issues manually, then reanalyze them.
 gateId=2
 timeout 5m docker exec -i sonarqube bash <<-EOF
-    while [[ "\$(curl -s -o /dev/null -w '%{http_code}' localhost:9000/api/qualitygates/list)" != "200" ]]; do 
+    apk --no-cache add curl
+
+    while [[ "\$(curl -s -o /dev/null -w '%{http_code}' localhost:9000/api/qualitygates/list)" != "200" ]]; do
         echo "Waiting for Sonarqube..."
         sleep 3
     done
-    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/copy?id=1&name=MyQualityGate"    
-    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/create_condition?gateId=${gateId}&metric=vulnerabilities&op=GT&error=0"
-    curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/set_as_default?id=${gateId}"
+
+    sonarqube_version=\$(curl -s localhost:9000/api/server/version)
+    echo "SonarQube version \$sonarqube_version"
+
+    if [[ "\$sonarqube_version" =~ ^((8\.[4-9])|9) ]]; then
+        # 8.4+:
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/copy?sourceName=Sonar%20way&name=MyQualityGate"
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/create_condition?gateName=MyQualityGate&metric=bugs&op=GT&error=0"
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/set_as_default?name=MyQualityGate"
+    else
+        # Pre 8.4:
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/copy?id=1&name=MyQualityGate"
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/create_condition?gateId=${gateId}&metric=bugs&op=GT&error=0"
+        curl -s -X POST -u admin:admin "localhost:9000/api/qualitygates/set_as_default?id=${gateId}"
+    fi
 EOF
