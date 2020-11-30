@@ -272,9 +272,6 @@ public final class QualityGateBreaker implements PostJob {
   }
   
   private class Something {
-    private String something;
-    private Valami(String something) {
-      this.something = something;
-    }
+    private String something = "something";
   }
 }
