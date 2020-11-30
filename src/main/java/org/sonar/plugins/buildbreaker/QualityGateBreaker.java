@@ -270,4 +270,11 @@ public final class QualityGateBreaker implements PostJob {
       checkQualityGate(wsClient, analysisId);
     }
   }
+  
+  private class Something {
+    private String something;
+    private Valami(String something) {
+      this.something = something;
+    }
+  }
 }
