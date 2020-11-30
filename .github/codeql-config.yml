@@ -10,4 +10,4 @@ queries:
   - name: Security and Quality
     uses: security-and-quality
   - name: Official base Java ruleset
-    uses: java-code-scanning
+    uses: github/codeql/java/ql/src/codeql-suites/java-code-scanning.qls@v1.25.0
