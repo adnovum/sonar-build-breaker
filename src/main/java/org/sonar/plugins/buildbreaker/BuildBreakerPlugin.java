@@ -32,6 +32,8 @@ public class BuildBreakerPlugin implements Plugin {
   static final String LOG_STAMP = "[BUILD BREAKER]";
 
   static final String SKIP_KEY = "sonar.buildbreaker.skip";
+  
+  static final String HOSZZUB = "i.am.unused";
 
   static final String QUERY_MAX_ATTEMPTS_KEY = "sonar.buildbreaker.queryMaxAttempts";
 
@@ -63,7 +65,7 @@ public class BuildBreakerPlugin implements Plugin {
             PropertyDefinition.builder(QUERY_MAX_ATTEMPTS_KEY)
                 .name("API query max attempts")
                 .description(
-                    "The maximum number of queries to the API when waiting for report processing.  The "
+                    "The maximum number of queries to the API when waiting for report processing.The "
                         + "build will break if this is reached.<br/>"
                         + TOTAL_WAIT_TIME_DESCRIPTION)
                 .onQualifiers(Qualifiers.PROJECT)
