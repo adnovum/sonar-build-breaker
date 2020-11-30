@@ -60,6 +60,7 @@ import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
  */
 public final class QualityGateBreaker implements PostJob {
   private static final String METHODNAME = "myMethod";
+  
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
