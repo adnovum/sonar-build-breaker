@@ -59,6 +59,7 @@ import org.sonarqube.ws.client.qualitygates.ProjectStatusRequest;
  * the project's quality gate. Breaks the build if the quality gate has failed.
  */
 public final class QualityGateBreaker implements PostJob {
+  private static final String METHODNAME = "myMethod";
   private static final String CLASSNAME = QualityGateBreaker.class.getSimpleName();
   private static final Logger LOGGER = Loggers.get(QualityGateBreaker.class);
 
