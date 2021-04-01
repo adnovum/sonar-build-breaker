@@ -12,15 +12,15 @@
 | 5.2               | Not compatible due to limitations with SonarQube platform |
 | 5.3 - 5.4         | 2.0, 2.1, 2.2 |
 | 5.5 - 7.2         | 2.1, 2.2 |
-| 7.3 - 8.4         | 2.3, 2.3.1 |
+| 7.3 - 8.7         | 2.3, 2.3.1 |
+| 8.8 -             | [Use the built-in property](https://docs.sonarqube.org/latest/analysis/branch-pr-analysis-overview/#header-1) |
 
 ## Installation
 
 ### Marketplace
 
-The easiest way to install the plugin is via the marketplace in your SonarQube administration settings. Just search for `Build Breaker`.
-
-Note: only version `2.3.1` and higher are available in the marketplace. Due to marketplace requirements, it can only be installed on Sonarqube 7.9+. You can still manually install it on older versions, as per table above.
+Since the release of SonarQube 8.8, the plugin is no longer in the marketplace because
+SonarQube introduced a [built-in property](https://docs.sonarqube.org/latest/analysis/branch-pr-analysis-overview/#header-1) to break builds.
 
 ### Manual installation
 
@@ -88,6 +88,7 @@ Gallio skipped will be marked "broken".
 
 If your SonarQube instance does not allow anonymous analyses, i.e. you're passing `sonar.login` to your analysis command,
 you must make sure that the analysis user has one of the following permissions on the project:
+
 * 'Administer System'
 * or 'Administer' on the specified project
 * or 'Browse' on the specified project
