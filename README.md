@@ -1,7 +1,11 @@
-# SonarQube Build Breaker Plugin
+# DEPRECATED - SonarQube Build Breaker Plugin
 
 [![Build Status](https://travis-ci.com/adnovum/sonar-build-breaker.svg?branch=master)](https://travis-ci.com/adnovum/sonar-build-breaker)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=adnovum_sonar-build-breaker&metric=alert_status)](https://sonarcloud.io/dashboard?id=adnovum_sonar-build-breaker)
+
+## Deprecation Notice
+
+This repository is deprecated, no future releases will happen. You are advised to use the built-in functionality available from SonarQube 8.8. Please check the [official documentation](https://docs.sonarqube.org/latest/analysis/branch-pr-analysis-overview/#header-1) to learn more.
 
 ## Compatibility
 
